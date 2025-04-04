@@ -5,12 +5,10 @@ class TeleportationRegion : public IRegion
 {
 public:
 
-	TeleportationRegion(float x, float y) : IRegion(x, y) {}
+	TeleportationRegion(float x, float y, float width, float height) 
+        : IRegion(x, y, width, height) 
+    {}
 
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe teleportation" << std::endl;
-    }
 
     void update() override
     {
@@ -26,6 +24,4 @@ public:
 	float getX() const { return m_x; }
 	float getY() const { return m_y; }
 
-private:
-	float m_x, m_y;
 };

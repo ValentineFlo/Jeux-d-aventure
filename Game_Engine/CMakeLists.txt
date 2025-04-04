@@ -12,6 +12,7 @@ set(HEADERS
  ${HEADER_DIR}/VectorND.h
  ${HEADER_DIR}/Animation.h
  ${HEADER_DIR}/Region.h
+ ${HEADER_DIR}/RegionManager.h
  ${HEADER_DIR}/RegionCollision.h
  ${HEADER_DIR}/RegionDestru.h
  ${HEADER_DIR}/RegionResuciteur.h
@@ -25,7 +26,7 @@ ${SOURCE_DIR}/RandomNumber.cpp
 ${SOURCE_DIR}/IGameObject.cpp
 ${SOURCE_DIR}/IShape.cpp
 ${SOURCE_DIR}/Animation.cpp
-${SOURCE_DIR}/Region.cpp
+ ${HEADER_DIR}/RegionManager.h
 ${SOURCE_DIR}/RegionCollision.cpp
 ${SOURCE_DIR}/RegionDestru.cpp
 ${SOURCE_DIR}/RegionResuciteur.cpp

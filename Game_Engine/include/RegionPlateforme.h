@@ -5,12 +5,8 @@ class PlateformeRegion : public IRegion
 {
 public:
 
-	PlateformeRegion(float x, float y) : IRegion(x, y) {}
+	PlateformeRegion(float x, float y, float width, float height) : IRegion(x, y, width, height) {}
 
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe plateforme" << std::endl;
-    }
 
     void update() override
     {
@@ -26,6 +22,4 @@ public:
 	float getX() const { return m_x; }
 	float getY() const { return m_y; }
 
-private:
-	float m_x, m_y;
 };

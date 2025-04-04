@@ -5,12 +5,8 @@ class DestructeurRegion : public IRegion
 {
 public:
 
-    DestructeurRegion(float x, float y) : IRegion(x, y) {}
+    DestructeurRegion(float x, float y, float width, float height) : IRegion(x, y, width, height) {}
 
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe destru" << std::endl;
-    }
 
     void update() override
     {
@@ -25,8 +21,5 @@ public:
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
-
-private:
-    float m_x, m_y;
 
 };

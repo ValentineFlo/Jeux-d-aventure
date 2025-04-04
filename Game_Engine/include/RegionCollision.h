@@ -5,12 +5,9 @@ class CollisionRegion : public IRegion
 {
 public:
 
-    CollisionRegion(float x, float y) : IRegion(x, y) {}
-
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe collision" << std::endl;
-    }
+    CollisionRegion(float x, float y, float width, float height) 
+        : IRegion(x, y, width, height) 
+    {}
 
     void update() override
     {
@@ -26,6 +23,4 @@ public:
 	float getX() const { return m_x; }
 	float getY() const { return m_y; }
 
-private:
-	float m_x, m_y;
 };
