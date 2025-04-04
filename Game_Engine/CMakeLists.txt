@@ -11,6 +11,8 @@ set(HEADERS
  ${HEADER_DIR}/IShape.h
  ${HEADER_DIR}/VectorND.h
  ${HEADER_DIR}/Animation.h
+ ${HEADER_DIR}/Region.h
+
 )
 set(SOURCES
 ${SOURCE_DIR}/TextureCache.cpp
