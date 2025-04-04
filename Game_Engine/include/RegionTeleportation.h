@@ -5,10 +5,9 @@ class TeleportationRegion : public IRegion
 {
 public:
 
-	TeleportationRegion(float x, float y, float width, float height) 
-        : IRegion(x, y, width, height) 
+	TeleportationRegion(float x, float y, float width, float height, IComposite* scene)
+        : IRegion(x, y, width, height, scene) 
     {}
-
 
     void update() override
     {

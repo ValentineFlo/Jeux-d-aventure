@@ -5,7 +5,7 @@ class PlateformeRegion : public IRegion
 {
 public:
 
-	PlateformeRegion(float x, float y, float width, float height) : IRegion(x, y, width, height) {}
+	PlateformeRegion(float x, float y, float width, float height, IComposite* scene) : IRegion(x, y, width, height, scene) {}
 
 
     void update() override

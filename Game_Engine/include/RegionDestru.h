@@ -5,7 +5,7 @@ class DestructeurRegion : public IRegion
 {
 public:
 
-    DestructeurRegion(float x, float y, float width, float height) : IRegion(x, y, width, height) {}
+    DestructeurRegion(float x, float y, float width, float height, IComposite* scene) : IRegion(x, y, width, height, scene) {}
 
 
     void update() override

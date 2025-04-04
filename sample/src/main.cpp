@@ -29,10 +29,6 @@ int main(int argc, char** argv)
     //a.AddScene(new Game(a.getWindow(), 240, a.getTextureCache()));
     //a.Exe();
 
-    RegionManager region; 
-    region.createRegion(COLLISIONABLE, 0.0f, 0.0f, 2.0f, 2.0f);
 
-    region.updateAll();
-    region.renderAll();
     return 0;
 }

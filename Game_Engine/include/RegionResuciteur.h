@@ -5,7 +5,7 @@ class ResuciteurRegion : public IRegion
 {
 public:
 
-    ResuciteurRegion(float x, float y, float width, float height) : IRegion(x, y, width, height) {}
+    ResuciteurRegion(float x, float y, float width, float height, IComposite* scene) : IRegion(x, y, width, height, scene) {}
 
 
     void update() override

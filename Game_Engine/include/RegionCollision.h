@@ -5,8 +5,8 @@ class CollisionRegion : public IRegion
 {
 public:
 
-    CollisionRegion(float x, float y, float width, float height) 
-        : IRegion(x, y, width, height) 
+    CollisionRegion(float x, float y, float width, float height, IComposite* scene) 
+        : IRegion(x, y, width, height, scene) 
     {}
 
     void update() override
