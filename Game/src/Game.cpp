@@ -12,6 +12,9 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	m_Background = new SquareSFML(10000, sf::Vector2f(0, 0));
 	m_Background->setTexture(m_texture->getTexture("Map.png"));
 	m_hero = new Hero(this, m_Background);
+	m_regionManager = new RegionManager();
+	m_regionManager->addRegion(RegionType::COLLISIONABLE, 800, 500, 100, 100, this);
+
 	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);
 	new GameBorder(this, m_Background, Position::Up, 5);
@@ -26,6 +29,8 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	//sf::Vector2f bossSpawnPosition(GetCenterWindow().x, GetCenterWindow().y - 300);
 	//m_bossSpawner->SetSpawnPosition(bossSpawnPosition);
 
+
+
 	getWindow()->setMouseCursorVisible(false);
 }
 
@@ -37,6 +42,8 @@ void Game::Update(const float& deltatime)
 	}
 
 	cursor.Update(deltatime);
+	m_regionManager->update();
+
 	//m_spawner->Spawn();
 
 	//m_bossSpawnTimer.NextTIck(deltatime);
@@ -70,4 +77,5 @@ void Game::Render()
 		obj->Render();
 	}
 	cursor.Render();
+	m_regionManager->render();
 }

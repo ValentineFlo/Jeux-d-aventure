@@ -37,7 +37,7 @@ public:
     }
     
 
-    void updateAll()
+    void update()
     {
         for (auto& region : m_regions)
         {
@@ -45,7 +45,7 @@ public:
         }
     }
 
-    void renderAll()
+    void render()
     {
         for (auto& region : m_regions)
         {
