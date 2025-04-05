@@ -28,10 +28,11 @@ public:
     virtual ~IRegion() = default;
     virtual void update() = 0;
     virtual void render() = 0;
+	virtual void FixPosition() = 0;
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
-
+    
 protected:
     float m_x, m_y;
     float m_width, m_height;
