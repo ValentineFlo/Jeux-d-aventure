@@ -2,12 +2,14 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion
+class CollisionRegion : public IRegion, public NonDestructibleObject
 {
 public:
 
     CollisionRegion(float x, float y, float width, float height, IComposite* scene) 
-        : IRegion(x, y, width, height, scene) 
+        : IRegion(x, y, width, height, scene)
+        , NonDestructibleObject(scene)
+
     {
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y); 
@@ -17,27 +19,23 @@ public:
 
     }
 
-    void update() override
+    void Update(const float& deltatime) override
     {
-		std::cout << "lets goooooooo update collision" << std::endl;
-
+        std::cout << "update collision" << std::endl;
 		FixPosition();
+        HandleCollision();
     }
 
-    void render() override
+    void ProcessInput(const sf::Event& event) 
     {
-        std::cout << "lets goooooooo render collision" << std::endl;
-
-        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
-
+        std::cout << "process collision" << std::endl;
     }
 
-
-
-	float getX() const { return m_x; }
-	float getY() const { return m_y; }
-
-private:
+    void Render() override
+    {
+        std::cout << "render collision" << std::endl;
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
+    }
 
     void FixPosition() override
     {
@@ -55,6 +53,34 @@ private:
         m_shape.setPosition(dotposX, dotposY);
     }
 
-private:
+	AABB getBoundingBox() const override
+	{
+		return AABB(sf::Vector2f(m_x, m_y), sf::Vector2f(m_x + m_width, m_y + m_height));
+
+	}
+
+
+
+    void HandleCollision() override
+    {
+        AABB regionBox = getBoundingBox();
+        auto objets = m_scene->getFullTree();
+
+
+        for (auto* objet : objets)
+        {
+           
+           
+            
+        }
+
+    }
+
+
+    float getX() const { return m_x; }
+    float getY() const { return m_y; }
+
+private :
     sf::RectangleShape m_shape;
 };
+

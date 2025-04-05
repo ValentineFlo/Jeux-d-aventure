@@ -41,7 +41,7 @@ public:
     {
         for (auto& region : m_regions)
         {
-            region->update();
+            region->Update();
         }
     }
 
@@ -49,7 +49,7 @@ public:
     {
         for (auto& region : m_regions)
         {
-            region->render();
+            region->Render();
         }
     }
 

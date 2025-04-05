@@ -109,8 +109,8 @@ public:
 };
 
 enum class GameObjectType {
-    DestructibleObject,
-    NonDestructibleObject
+      DestructibleObject
+    , NonDestructibleObject
 };
 
 class IGameObject {
@@ -129,6 +129,7 @@ public:
     virtual GameObjectType globalGameObjectType() = 0;
     virtual void HandleCollision(IGameObject* object) {}
 
+
     bool NeedDestroy();
     void destroy();
 
@@ -140,7 +141,8 @@ private:
     bool m_needDestroy;
 };
 
-class DestructibleObject : public IGameObject {
+class DestructibleObject : public IGameObject 
+{
 public:
     DestructibleObject(IComposite* scene, const float& life);
 

@@ -462,6 +462,7 @@ void Hero::Update(const float& deltatime)
     m_meleeAttackTimer.NextTIck(deltatime);
     IComposite::Update(deltatime);
     m_invisibility.NextTIck(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
+
 }
 
 void Hero::Render()
