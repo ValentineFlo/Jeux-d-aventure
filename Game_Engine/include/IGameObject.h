@@ -74,6 +74,7 @@ protected:
     const Component GetComponentType() const override {
         return Component::IComposite;
     }
+    
 
 private:
     void add(IComponent* data);
@@ -101,6 +102,7 @@ public:
     virtual void ProcessInput(const sf::Event& event) = 0;
     virtual void Render() = 0;
 
+
     Component GetComponentType() override {
         return Component::ILeaf;
     }
@@ -114,7 +116,8 @@ enum class GameObjectType {
     , NonDestructibleObject
 };
 
-class IGameObject {
+class IGameObject : public  ILeaf 
+{
 public:
     IGameObject(IComposite* scene);
     virtual ~IGameObject();
@@ -129,6 +132,7 @@ public:
 
     virtual GameObjectType globalGameObjectType() = 0;
     virtual void HandleCollision(IGameObject* object) {}
+
 
 
     bool NeedDestroy();

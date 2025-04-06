@@ -40,6 +40,8 @@ void Game::Update(const float& deltatime)
 	for (auto& obj : getChildren())
 	{
 		obj->Update(deltatime);
+		std::cout << "[Scene] update cycle" << std::endl;
+
 	}
 
 	cursor.Update(deltatime);

@@ -10,7 +10,10 @@ public:
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
         , IComposite(scene)
+<<<<<<< HEAD
         , m_object(manager)
+=======
+>>>>>>> 812f6f72dab72450f8958f492140c38a84aa6a57
 
     {
 
@@ -65,6 +68,7 @@ public:
 
     void HandleCollision() override
     {
+<<<<<<< HEAD
         std::cout << m_object->getSize() << std::endl;
 
         for (IGameObject* objet : m_object->getAll())
@@ -76,6 +80,20 @@ public:
 
             return;
         }
+=======
+        /*for (IGameObject* objet :)
+        {
+            if (objet == this) continue;
+
+            if (getBoundingBox().Intersects(objet->GetBoundingBox()))
+            {
+                std::cout << "Collision avec : " << objet << std::endl;
+
+                objet->getShape()->setPosition(objet->getLastPosition());
+            }
+            
+        }*/
+>>>>>>> 812f6f72dab72450f8958f492140c38a84aa6a57
 
     }
 

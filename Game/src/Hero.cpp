@@ -417,6 +417,7 @@ void Hero::Update(const float& deltatime)
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
 
+
     m_strafe = { false, false, false, false };
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
