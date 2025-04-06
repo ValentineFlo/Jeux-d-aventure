@@ -12,6 +12,7 @@ class RegionManager
 
 {
 public:
+
     static std::unique_ptr<IRegion> createRegion(RegionType type, float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
     {
         switch (type) 
@@ -33,6 +34,7 @@ public:
 
     void addRegion(RegionType type, float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
     {
+
         m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, scene, manager));
     }
     

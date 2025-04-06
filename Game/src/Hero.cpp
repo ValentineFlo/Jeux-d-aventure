@@ -294,6 +294,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
     , m_meleeAttackTimer(2.0f)
     , m_currentOrientation(Orientation::DOWN)
 {
+
     m_shape = new SquareSFML(32, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 
@@ -411,6 +412,8 @@ void Hero::physics()
 
 void Hero::Update(const float& deltatime)
 {
+
+
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
 
@@ -454,6 +457,7 @@ void Hero::Update(const float& deltatime)
 
     m_background->setPosition(static_cast<Physics*>(m_physics)->calculPosition(
         m_background, m_scene->getRoot()->getScene(), m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()));
+
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 

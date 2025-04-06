@@ -76,7 +76,6 @@ private:
 	//BossSpawner* m_bossSpawner;
 	Timer m_bossSpawnTimer;
 
-	Hero* m_hero;
 	RegionManager* m_regionManager;
 	GameObjectManager m_objectManager;
 };

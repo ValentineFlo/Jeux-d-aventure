@@ -13,6 +13,7 @@ public:
         , m_object(manager)
 
     {
+
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y); 
         m_shape.setFillColor(sf::Color(0, 0, 0, 0));
@@ -21,16 +22,12 @@ public:
 
     }
 
-    ~CollisionRegion()
-    {
-        delete m_object;
-        m_object = nullptr;
-    }
 
     void Update(const float& deltatime) override
     {
 		FixPosition();
         HandleCollision();
+
     }
 
     void ProcessInput(const sf::Event& event) 
@@ -68,23 +65,19 @@ public:
 
     void HandleCollision() override
     {
-
         std::cout << m_object->getSize() << std::endl;
 
         for (IGameObject* objet : m_object->getAll())
         {
-            std::cout << "boucle" << std::endl;
-
-            if (objet == this) continue;
-
-            if (getBoundingBox().Intersects(objet->getShape()->GetBoundingBox()))
+            if (objet->GetBoundingBox().Intersects(getBoundingBox()))
             {
-                std::cout << "Collision!!!!!!" << std::endl;
+                std::cout << "Collision!!!!!!!!!!!!!!" << std::endl;
             }
+
+            return;
         }
 
     }
-
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
