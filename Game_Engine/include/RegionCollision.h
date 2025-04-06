@@ -2,13 +2,15 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion, public NonDestructibleObject
+class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
-    CollisionRegion(float x, float y, float width, float height, IComposite* scene) 
+    CollisionRegion(float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
+        , IComposite(scene)
+        , m_object(manager)
 
     {
         m_shape.setSize(sf::Vector2f(width, height));
@@ -19,21 +21,25 @@ public:
 
     }
 
+    ~CollisionRegion()
+    {
+        delete m_object;
+        m_object = nullptr;
+    }
+
     void Update(const float& deltatime) override
     {
-        std::cout << "update collision" << std::endl;
 		FixPosition();
         HandleCollision();
     }
 
     void ProcessInput(const sf::Event& event) 
     {
-        std::cout << "process collision" << std::endl;
+
     }
 
     void Render() override
     {
-        std::cout << "render collision" << std::endl;
         m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
@@ -60,18 +66,21 @@ public:
 	}
 
 
-
     void HandleCollision() override
     {
-        AABB regionBox = getBoundingBox();
-        auto objets = m_scene->getFullTree();
 
+        std::cout << m_object->getSize() << std::endl;
 
-        for (auto* objet : objets)
+        for (IGameObject* objet : m_object->getAll())
         {
-           
-           
-            
+            std::cout << "boucle" << std::endl;
+
+            if (objet == this) continue;
+
+            if (getBoundingBox().Intersects(objet->getShape()->GetBoundingBox()))
+            {
+                std::cout << "Collision!!!!!!" << std::endl;
+            }
         }
 
     }
@@ -82,5 +91,6 @@ public:
 
 private :
     sf::RectangleShape m_shape;
+    GameObjectManager* m_object;
 };
 

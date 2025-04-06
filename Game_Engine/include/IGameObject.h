@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include <vector>
 #include <memory>
+#include <iostream>
 
 struct AABB {
     AABB(sf::Vector2f amin, sf::Vector2f amax) : Amin(amin), Amax(amax) {}
@@ -140,6 +141,47 @@ protected:
 private:
     bool m_needDestroy;
 };
+
+class GameObjectManager 
+{
+public:
+    void registerObject(IGameObject* obj) 
+    {
+        std::cout << "enregistre : " << obj << std::endl;
+        m_objects.push_back(obj);
+    }
+
+    const std::vector<IGameObject*>& getAll() const 
+    {
+        return m_objects;
+    }
+
+    std::vector<IGameObject*> getByType(GameObjectType type) const 
+    {
+        std::vector<IGameObject*> result;
+        for (auto* obj : m_objects)
+        {
+            if (obj->globalGameObjectType() == type)
+                result.push_back(obj);
+        }
+        return result;
+    }
+    
+    int getSize()
+    {
+        return m_objects.size();
+    }
+
+    void clear() 
+    {
+        m_objects.clear();
+
+    }
+
+private:
+    std::vector<IGameObject*> m_objects;
+};
+
 
 class DestructibleObject : public IGameObject 
 {

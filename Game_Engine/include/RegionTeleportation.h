@@ -1,13 +1,14 @@
 #pragma once
 #include "Region.h"
 
-class TeleportationRegion : public IRegion, public NonDestructibleObject
+class TeleportationRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
-	TeleportationRegion(float x, float y, float width, float height, IComposite* scene)
+	TeleportationRegion(float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
+        , IComposite(scene)
     {}
 
     void Update(const float& deltatime) override

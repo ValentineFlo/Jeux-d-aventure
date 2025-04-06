@@ -1,13 +1,14 @@
 #pragma once
 #include "Region.h"
 
-class DestructeurRegion : public IRegion, public NonDestructibleObject
+class DestructeurRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
-    DestructeurRegion(float x, float y, float width, float height, IComposite* scene) 
+    DestructeurRegion(float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
+        , IComposite(scene)
     {}
 
 

@@ -78,4 +78,5 @@ private:
 
 	Hero* m_hero;
 	RegionManager* m_regionManager;
+	GameObjectManager m_objectManager;
 };

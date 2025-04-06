@@ -12,46 +12,30 @@ class RegionManager
 
 {
 public:
-    static std::unique_ptr<IRegion> createRegion(RegionType type, float x, float y, float width, float height, IComposite* scene)
+    static std::unique_ptr<IRegion> createRegion(RegionType type, float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
     {
         switch (type) 
         {
         case COLLISIONABLE:
-            return std::unique_ptr <CollisionRegion>(new CollisionRegion(x, y, width, height, scene));
+            return std::unique_ptr <CollisionRegion>(new CollisionRegion(x, y, width, height, scene, manager));
         case DESTRUCTEUR:
-            return std::unique_ptr <DestructeurRegion>(new DestructeurRegion(x, y, width, height, scene));
+            return std::unique_ptr <DestructeurRegion>(new DestructeurRegion(x, y, width, height, scene, manager));
         case PLATEFORME:
-            return std::unique_ptr <PlateformeRegion>(new PlateformeRegion(x, y, width, height, scene));
+            return std::unique_ptr <PlateformeRegion>(new PlateformeRegion(x, y, width, height, scene, manager));
         case RESUCITEUR:
-			return std::unique_ptr <ResuciteurRegion>(new ResuciteurRegion(x, y, width, height, scene));
+			return std::unique_ptr <ResuciteurRegion>(new ResuciteurRegion(x, y, width, height, scene, manager));
         case TELEPORTATION:
-            return std::unique_ptr <TeleportationRegion>(new TeleportationRegion(x, y, width, height, scene));
+            return std::unique_ptr <TeleportationRegion>(new TeleportationRegion(x, y, width, height, scene, manager));
         default:
             throw std::runtime_error("Type de region inconnu");
         }
     }
 
-    void addRegion(RegionType type, float x, float y, float width, float height, IComposite* scene)
+    void addRegion(RegionType type, float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
     {
-        m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, scene));
+        m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, scene, manager));
     }
     
-
-    void update()
-    {
-        for (auto& region : m_regions)
-        {
-            region->Update();
-        }
-    }
-
-    void render()
-    {
-        for (auto& region : m_regions)
-        {
-            region->Render();
-        }
-    }
 
 private:
     std::vector<std::unique_ptr<IRegion>> m_regions;
