@@ -2,13 +2,14 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion, public NonDestructibleObject
+class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
     CollisionRegion(float x, float y, float width, float height, IComposite* scene) 
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
+        , IComposite(scene)
 
     {
         m_shape.setSize(sf::Vector2f(width, height));
@@ -60,19 +61,20 @@ public:
 	}
 
 
-
     void HandleCollision() override
     {
-        AABB regionBox = getBoundingBox();
-        auto objets = m_scene->getFullTree();
-
-
-        for (auto* objet : objets)
+        /*for (IGameObject* objet :)
         {
-           
-           
+            if (objet == this) continue;
+
+            if (getBoundingBox().Intersects(objet->GetBoundingBox()))
+            {
+                std::cout << "Collision avec : " << objet << std::endl;
+
+                objet->getShape()->setPosition(objet->getLastPosition());
+            }
             
-        }
+        }*/
 
     }
 

@@ -163,7 +163,11 @@ ILeaf::ILeaf(IComposite* parent) : IComponent(parent)
 {
 }
 
-IGameObject::IGameObject(IComposite* scene) : m_scene(scene), m_shape(nullptr), m_needDestroy(false)
+IGameObject::IGameObject(IComposite* scene) 
+    : m_scene(scene)
+    , m_shape(nullptr)
+    , m_needDestroy(false)
+    , ILeaf(scene)
 {
 }
 

@@ -39,10 +39,11 @@ void Game::Update(const float& deltatime)
 	for (auto& obj : getChildren())
 	{
 		obj->Update(deltatime);
+		std::cout << "[Scene] update cycle" << std::endl;
+
 	}
 
 	cursor.Update(deltatime);
-	m_regionManager->update();
 
 	//m_spawner->Spawn();
 
@@ -77,5 +78,4 @@ void Game::Render()
 		obj->Render();
 	}
 	cursor.Render();
-	m_regionManager->render();
 }

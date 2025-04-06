@@ -37,22 +37,6 @@ public:
     }
     
 
-    void update()
-    {
-        for (auto& region : m_regions)
-        {
-            region->Update();
-        }
-    }
-
-    void render()
-    {
-        for (auto& region : m_regions)
-        {
-            region->Render();
-        }
-    }
-
 private:
     std::vector<std::unique_ptr<IRegion>> m_regions;
 };

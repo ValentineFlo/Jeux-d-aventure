@@ -1,13 +1,14 @@
 #pragma once
 #include "Region.h"
 
-class ResuciteurRegion : public IRegion, public NonDestructibleObject
+class ResuciteurRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
     ResuciteurRegion(float x, float y, float width, float height, IComposite* scene) 
         : IRegion(x, y, width, height, scene)
         , NonDestructibleObject(scene)
+        , IComposite(scene)
     {}
 
 
