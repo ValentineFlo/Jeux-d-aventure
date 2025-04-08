@@ -5,7 +5,7 @@
 #include "SceneBase.h"
 
 
-class ISpawner : public IComposite
+class ISpawner : public IGameObject
 {
 public:
 	ISpawner(IComposite* scene, const size_t& maxEntity);

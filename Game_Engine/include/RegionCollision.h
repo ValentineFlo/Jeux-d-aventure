@@ -2,13 +2,13 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion, public IComposite
+class CollisionRegion : public IRegion, public IGameObject
 {
 public:
 
     CollisionRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IComposite(scene)
+        , IGameObject(scene)
 
 
     {
@@ -83,8 +83,20 @@ public:
 
     }
 
+
     float getX() const { return m_x; }
     float getY() const { return m_y; }
+
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::NonDestructibleObject;
+    }
 
 private :
     sf::RectangleShape m_shape;

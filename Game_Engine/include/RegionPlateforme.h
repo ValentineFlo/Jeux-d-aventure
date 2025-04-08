@@ -1,13 +1,13 @@
 #pragma once
 #include "Region.h"
 
-class PlateformeRegion : public IRegion, public IComposite
+class PlateformeRegion : public IRegion, public IGameObject
 {
 public:
 
 	PlateformeRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IComposite(scene)
+        , IGameObject(scene)
     {}
 
 
@@ -68,7 +68,16 @@ public :
 
     }
 
-
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::NonDestructibleObject;
+    }
 private:
 	sf::RectangleShape m_shape;
 

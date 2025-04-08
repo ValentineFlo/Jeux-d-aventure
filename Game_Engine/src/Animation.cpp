@@ -117,7 +117,7 @@ sf::IntRect Animation::getCurrentFrameRect() const
 }
 
 AnimationComponent::AnimationComponent(IComposite* parent)
-    : ILeaf(parent)
+    : IGameObject(parent)
     , m_currentAnimation("")
     , m_scale(1.0f, 1.0f)
     , m_playing(false)

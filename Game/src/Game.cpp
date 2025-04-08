@@ -63,12 +63,16 @@ void Game::Update(const float& deltatime)
 
 void Game::ProcessInput(const sf::Event& event)
 {
-	for (auto& obj : getChildren())
+	
+	for(auto it = m_listGameObject.begin();it!= m_listGameObject.end();++it)
 	{
-		obj->ProcessInput(event);
+		(*it)->ProcessInput(event);
 	}
-	cursor.ProcessInput(event);
-
+	// for (auto& obj : getChildren())
+	// {
+	// 	obj->ProcessInput(event);
+	// }
+	// cursor.ProcessInput(event);
 }
 
 void Game::Render()

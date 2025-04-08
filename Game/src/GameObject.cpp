@@ -4,8 +4,9 @@
 #include <iostream>
 #include "RandomNumber.h"
 
-IBorder::IBorder(IComposite* scene, IShapeSFML* object) :
-	IGameObject(scene), ILeaf(scene), m_ObjectToProtect(object)
+IBorder::IBorder(IComposite* scene, IShapeSFML* object)
+	:IGameObject(scene)
+	,m_ObjectToProtect(object)
 {
 }
 
@@ -171,7 +172,6 @@ void GameBorder::HandleCollision(IGameObject* object)
 
 ITurret::ITurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff) :
 	IGameObject(scene)
-	, IComposite(scene)
 	, m_positionDiff(positiondiff)
 	, m_gameObject(game_object)
 	, m_fireRate(0.5)
@@ -185,7 +185,7 @@ ITurret::ITurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& posit
 
 void ITurret::Update(const float& deltatime)
 {
-	IComposite::Update(deltatime);
+	//IComposite::Update(deltatime);
 }
 
 void ITurret::setBullet(float Size, float Speed, float hp)
@@ -215,7 +215,10 @@ PlayerSprite::PlayerSprite() : AnimateSprite({ "PlayerBullet.png","PlayerBullet2
 {
 }
 
-FixTurret::FixTurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff, float angle) : ITurret(scene, game_object, positiondiff), m_angleDiff(angle), BaseShape(10, m_gameObject->getPosition())
+FixTurret::FixTurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff, float angle)
+	: ITurret(scene, game_object, positiondiff)
+	, m_angleDiff(angle)
+	, BaseShape(10, m_gameObject->getPosition())
 {
 	m_shape = new SquareSFML(10, m_gameObject->getPosition());
 }
@@ -243,14 +246,14 @@ void FixTurret::Update(const float& deltatime)
 	{
 		m_masShot.PreviousTick();
 	}
-	IComposite::Update(deltatime);
+	//IComposite::Update(deltatime);
 }
 
 void FixTurret::Render()
 {
 
 	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<SquareSFML*>(m_shape)->getShape());
-	IComposite::Render();
+	//IComposite::Render();
 }
 
 void FixTurret::Fire()
@@ -306,13 +309,13 @@ void AutoTurret::Update(const float& deltatime)
 	{
 		m_masShot.PreviousTick();
 	}
-	IComposite::Update(deltatime);
+	//IComposite::Update(deltatime);
 }
 
 void AutoTurret::Render()
 {
 	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<SquareSFML*>(m_shape)->getShape());
-	IComposite::Render();
+	//IComposite::Render();
 }
 
 void AutoTurret::Fire()
@@ -337,8 +340,9 @@ void AutoTurret::Fire()
 
 
 IBullet::IBullet(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp) 
-	: m_life(hp), ILeaf(scene)
-	, m_gun(gun), m_gunPosition(0, 0)
+	: m_life(hp)
+	, m_gun(gun)
+	, m_gunPosition(0, 0)
 	, m_gunangle(angle)
 	, m_speed(speed)
 	, m_size(size)
@@ -444,9 +448,8 @@ void ClassicBullet::HandleCollision(IGameObject* object)
 
 
 
-Cursor::Cursor(IComposite* scene) :
-	IGameObject(scene)
-	, ILeaf(scene)
+Cursor::Cursor(IComposite* scene)
+	:IGameObject(scene)
 	, m_animate({ "Crossair.png","Crossair2.png","Crossair3.png" })
 {
 	m_shape = new CircleSFML(43, scene->getRoot()->getScene());
@@ -499,7 +502,6 @@ sf::Vector2f Physics::calculPosition(IShapeSFML* entity, ISceneBase* scene, floa
 
 DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, float size) :
 	IGameObject(scene),
-	ILeaf(scene),
 	m_animate({}),
 	m_animationTimer(0.2f),
 	m_animationSpeed(0.2f),
@@ -510,7 +512,6 @@ DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f
 
 DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, const sf::Vector2f& size) :
 	IGameObject(scene),
-	ILeaf(scene),
 	m_animate({}),
 	m_animationTimer(0.2f),
 	m_animationSpeed(0.2f),

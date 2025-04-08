@@ -61,7 +61,7 @@ protected:
     virtual bool shouldIgnoreCollision(IGameObject* object) const override;
 };
 
-class ShieldProjectile : public IGameObject, public ILeaf
+class ShieldProjectile : public IGameObject
 {
 public:
     ShieldProjectile(IComposite* scene, IShapeSFML* owner, float duration, float radius);
@@ -69,7 +69,12 @@ public:
     virtual void ProcessInput(const sf::Event& event) override {};
     virtual void Update(const float& deltatime);
     virtual void HandleCollision(IGameObject* object) ;
-
+    Component GetComponentType() override {
+        return Component::ILeaf;
+    }
+    const Component GetComponentType() const override {
+        return Component::ILeaf;
+    }
 private:
     IShapeSFML* m_owner;
     AnimateSprite m_animate;

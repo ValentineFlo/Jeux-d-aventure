@@ -1,13 +1,13 @@
 #pragma once
 #include "Region.h"
 
-class TeleportationRegion : public IRegion, public IComposite
+class TeleportationRegion : public IRegion, public IGameObject
 {
 public:
 
 	TeleportationRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IComposite(scene)
+        , IGameObject(scene)
     {}
 
     void Update(const float& deltatime) override
@@ -63,7 +63,16 @@ public:
         //    }
         //}
     }
-
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::NonDestructibleObject;
+    }
 private:
 	sf::RectangleShape m_shape;
 

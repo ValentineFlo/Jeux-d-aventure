@@ -13,7 +13,7 @@ enum class EnemyState {
     DEAD
 };
 
-class Enemy : public IGameObject, public IComposite {
+class Enemy : public IGameObject {
 public:
     Enemy(IComposite* scene, const sf::Vector2f& spawnPosition, float maxHealth = 200.0f);
     ~Enemy();
@@ -28,6 +28,14 @@ public:
     {
         return GameObjectType::DestructibleObject;
     }
+
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
+
 private:
     class IState {
     public:

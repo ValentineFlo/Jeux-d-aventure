@@ -15,7 +15,7 @@ enum trust
 	, Default = 4
 };
 
-class Cursor : public IGameObject, public ILeaf
+class Cursor : public IGameObject
 {
 public:
 	Cursor(IComposite* scene);
@@ -27,6 +27,12 @@ public:
 	GameObjectType globalGameObjectType() override
 	{
 		return GameObjectType::NonDestructibleObject;
+	}
+	Component GetComponentType() override {
+		return Component::ILeaf;
+	}
+	const Component GetComponentType() const override {
+		return Component::ILeaf;
 	}
 private:
 	AnimateSprite m_animate;
@@ -47,7 +53,7 @@ private:
 };
 
 
-class IBorder :public IGameObject, public ILeaf
+class IBorder :public IGameObject
 {
 public:
 
@@ -59,7 +65,12 @@ public:
 	{
 		return GameObjectType::NonDestructibleObject;
 	}
-
+	Component GetComponentType() override {
+		return Component::ILeaf;
+	}
+	const Component GetComponentType() const override {
+		return Component::ILeaf;
+	}
 protected:
 	IShapeSFML* m_ObjectToProtect;
 };
@@ -114,7 +125,7 @@ public:
 	void HandleCollision(IGameObject* object) ;
 };
 
-class ITurret : public IGameObject, public IComposite
+class ITurret : public IGameObject
 {
 public:
 	ITurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff);
@@ -130,6 +141,12 @@ public:
 	GameObjectType globalGameObjectType() override
 	{
 		return GameObjectType::NonDestructibleObject;
+	}
+	Component GetComponentType() override {
+		return Component::IComposite;
+	}
+	const Component GetComponentType() const override {
+		return Component::IComposite;
 	}
 protected:
 	sf::Vector2f m_positionDiff;
@@ -176,7 +193,7 @@ private:
 
 };
 
-class IBullet : public IGameObject, public ILeaf
+class IBullet : public IGameObject
 {
 public:
 	IBullet(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp);
@@ -195,7 +212,12 @@ public:
 	float getCurrentLife() { return m_life; }
 	ITurret* getTurret() const { return m_gun; }
 
-
+	Component GetComponentType() override {
+		return Component::ILeaf;
+	}
+	const Component GetComponentType() const override {
+		return Component::ILeaf;
+	}
 protected:
 	float m_life;
 	ITurret* m_gun;
@@ -245,7 +267,7 @@ enum class Color
 
 
 
-class DecorativeGameObject :public IGameObject, public ILeaf
+class DecorativeGameObject :public IGameObject
 {
 public:
 	DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, float size);
@@ -262,6 +284,13 @@ public:
 	void setAnimationSpeed(float animationSpeed);
 	void stopAnimation();
 	void resumeAnimation();
+
+	Component GetComponentType() override {
+		return Component::ILeaf;
+	}
+	const Component GetComponentType() const override {
+		return Component::ILeaf;
+	}
 
 private:
 	AnimateSprite m_animate;

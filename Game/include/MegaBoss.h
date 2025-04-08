@@ -52,7 +52,7 @@ struct BossParameters
     static BossParameters getForPhase(BossPhase phase, BossMode mode);
 };
 
-class MegaBoss : public IGameObject, public IComposite
+class MegaBoss : public IGameObject
 {
 protected:
     enum State
@@ -193,7 +193,12 @@ public:
     void changeState(const State& newState);
 
     std::string getOrientationString() const;
-
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
 protected:
     float m_life;
     void findTarget();

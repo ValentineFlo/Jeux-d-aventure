@@ -465,7 +465,7 @@ void Hero::Update(const float& deltatime)
     m_animationComponent->Update(deltatime);
 
     m_meleeAttackTimer.NextTIck(deltatime);
-    IComposite::Update(deltatime);
+    //IComposite::Update(deltatime);
     m_invisibility.NextTIck(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
 
 }
@@ -495,7 +495,7 @@ void Hero::Render()
         m_scene->getRoot()->getScene()->getWindow()->draw(state->meleeHitbox->getShape());
     }
 
-    IComposite::Render();
+    //IComposite::Render();
 }
 
 float Hero::anglecalcul()

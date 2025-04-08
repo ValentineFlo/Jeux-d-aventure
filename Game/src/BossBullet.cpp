@@ -125,7 +125,6 @@ bool FastProjectile::shouldIgnoreCollision(IGameObject* object) const
 
 ShieldProjectile::ShieldProjectile(IComposite* scene, IShapeSFML* owner, float duration, float radius)
     : IGameObject(scene)
-	, ILeaf(scene)
     , m_owner(owner)
     , m_animate({ "PlayerBulle.png" })
     , m_duration(duration)

@@ -3,7 +3,7 @@
 #include "MegaBoss.h"
 #include "Animation.h"
 
-class Hero : public IGameObject/* , public IComposite */
+class Hero : public IGameObject
 {
 protected:
     enum State
@@ -101,7 +101,12 @@ public:
 		return GameObjectType::DestructibleObject;
 	}
 
-
+    Component GetComponentType() override {
+        return Component::IComposite;
+    }
+    const Component GetComponentType() const override {
+        return Component::IComposite;
+    }
 
 private:
     float m_life=10.f;

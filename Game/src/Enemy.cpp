@@ -6,7 +6,6 @@
 
 Enemy::Enemy(IComposite * scene, const sf::Vector2f & spawnPosition, float maxHealth)
     :IGameObject(scene)
-	,IComposite(scene)
     , m_maxLife(maxHealth)
     , m_speed(70.0f)
     , m_damage(25.0f)
@@ -146,13 +145,13 @@ void Enemy::Update(const float& deltaTime)
     m_animationComponent->updatePosition(screenPos);
     m_animationComponent->Update(deltaTime);
 
-    IComposite::Update(deltaTime);
+    //IComposite::Update(deltaTime);
 }
 
 void Enemy::Render()
 {
     m_animationComponent->Render();
-    IComposite::Render();
+    //IComposite::Render();
 }
 
 void Enemy::HandleCollision(IGameObject* object)

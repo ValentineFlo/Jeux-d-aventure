@@ -29,44 +29,181 @@ enum class Component {
     IGameObject
 };
 
-class IComponent {
-public:
-    IComponent(IComposite* parent);
-    virtual ~IComponent();
-
-    IComponent* getParent();
-    const IComponent* getParent() const;
-
-    virtual void Update(const float& deltatime) = 0;
-    virtual void ProcessInput(const sf::Event& event) = 0;
-    virtual void Render() = 0;
-    virtual Component GetComponentType() = 0;
-    virtual const Component GetComponentType() const = 0;
-
-    RootScene* getRoot();
-    const RootScene* getRoot() const;
-
-    void setParent(IComposite* parent);
-
-protected:
-    IComposite* m_parent;
+enum class GameObjectType
+{
+    DestructibleObject
+    , NonDestructibleObject
 };
 
-class IComposite : public IComponent {
+//
+//class IComponent {
+//public:
+//    IComponent(IComposite* parent);
+//    virtual ~IComponent();
+//
+//    IComponent* getParent();
+//    const IComponent* getParent() const;
+//
+//    virtual void Update(const float& deltatime) = 0;
+//    virtual void ProcessInput(const sf::Event& event) = 0;
+//    virtual void Render() = 0;
+//    virtual Component GetComponentType() = 0;
+//    virtual const Component GetComponentType() const = 0;
+//
+//    RootScene* getRoot();
+//    const RootScene* getRoot() const;
+//
+//    void setParent(IComposite* parent);
+//
+//protected:
+//    IComposite* m_parent;
+//};
+//
+//class IComposite : public IComponent {
+//public:
+//    friend class IComponent;
+//
+//    IComposite(IComposite* parent);
+//    ~IComposite();
+//    void Update(const float& deltatime) override;
+//    void ProcessInput(const sf::Event& event) override;
+//    void Render() override;
+//
+//    std::vector<IComponent*> getChildren();
+//    const std::vector<IComponent*> getChildren() const;
+//    std::vector<IComponent*> getFullTree();
+//
+//protected:
+//    Component GetComponentType() override {
+//        return Component::IComposite;
+//    }
+//    const Component GetComponentType() const override {
+//        return Component::IComposite;
+//    }
+//    
+//
+//private:
+//    void add(IComponent* data);
+//    void remove(IComponent* data);
+//    void AddFullTree(std::vector<IComponent*>& toAdd, std::vector<IComponent*> iterate);
+//
+//    std::vector<IComponent*> m_children;
+//};
+//
+//
+//
+//
+//
+//
+//class ILeaf : public IComponent {
+//public:
+//    ILeaf(IComposite* parent);
+//
+//    virtual void Update(const float& deltatime) = 0;
+//    virtual void ProcessInput(const sf::Event& event) = 0;
+//    virtual void Render() = 0;
+//
+//
+//    Component GetComponentType() override {
+//        return Component::ILeaf;
+//    }
+//    const Component GetComponentType() const override {
+//        return Component::ILeaf;
+//    }
+//};
+//
+//
+//class IGameObject : public  ILeaf 
+//{
+//public:
+//    IGameObject(IComposite* scene);
+//    virtual ~IGameObject();
+//
+//    virtual void Update(const float& deltatime) = 0;
+//    virtual void ProcessInput(const sf::Event& event) = 0;
+//    virtual void Render() = 0;
+//
+//    virtual AABB GetBoundingBox();
+//    IShapeSFML* getShape();
+//    const IShapeSFML* getShape() const { return m_shape; }
+//
+//    virtual GameObjectType globalGameObjectType() = 0;
+//    virtual void HandleCollision(IGameObject* object) {}
+//
+//
+//
+//    bool NeedDestroy();
+//    void destroy();
+//
+//protected:
+//    IComposite* m_scene;
+//    IShapeSFML* m_shape;
+//
+//private:
+//    bool m_needDestroy;
+//};
+
+//class IGameObject : public IComponent
+//{
+//public:
+//	IGameObject(IComposite* parent = nullptr)
+//		:IComponent(nullptr)
+//	{}
+//	virtual ~IGameObject() = default;
+//
+//
+//	virtual void Update(const float& deltatime) = 0;
+//	virtual void ProcessInput(const sf::Event& event) = 0;
+//	virtual void Render() = 0;
+//
+//
+//	virtual uint32_t getGameObjectType() const = 0;
+//	virtual LayersType getLayersType() const = 0;
+//	virtual sf::Vector2f getInitPosition() const;
+//	virtual sf::Vector2f getCurrentPosition() const;
+//	virtual float sorting_Y_point() const;
+//protected:
+//	const sf::Vector2f m_initialPosition{ 0, 0 };
+//	sf::Vector2f m_currentPosition{ 0, 0 };
+//};
+//
+
+
+
+
+class IComponent
+{
 public:
-    friend class IComponent;
+	IComponent(IComposite* parent = nullptr);
+	virtual ~IComponent();
+	IComponent* getParent();
+	const IComponent* getParent() const;
 
-    IComposite(IComposite* parent);
-    ~IComposite();
+	RootScene* getRoot();
+	const RootScene* getRoot() const;
 
-    void Update(const float& deltatime) override;
-    void ProcessInput(const sf::Event& event) override;
-    void Render() override;
+	void setParent(IComposite* parent);
 
-    std::vector<IComponent*> getChildren();
-    const std::vector<IComponent*> getChildren() const;
+    virtual const Component GetComponentType() const = 0;
+    virtual Component GetComponentType() = 0;
+protected:
+
+    
+	IComposite* m_parent;
+};
+
+
+class IComposite : public IComponent
+{
+public:
+	friend IComponent;
+
+	IComposite(IComposite* parent = nullptr);
+	~IComposite();
+
+	std::vector<IComponent*> getChildren();
+	const std::vector<IComponent*> getChildren() const;
     std::vector<IComponent*> getFullTree();
-
 protected:
     Component GetComponentType() override {
         return Component::IComposite;
@@ -74,53 +211,37 @@ protected:
     const Component GetComponentType() const override {
         return Component::IComposite;
     }
-    
 
 private:
-    void add(IComponent* data);
-    void remove(IComponent* data);
+	void add(IComponent* data);
+	void remove(IComponent* data);
     void AddFullTree(std::vector<IComponent*>& toAdd, std::vector<IComponent*> iterate);
-
-    std::vector<IComponent*> m_children;
+	std::vector<IComponent*> m_children;
 };
+
+class ILeaf : public IComponent
+{
+public:
+	ILeaf(IComposite* parent);
+	virtual ~ILeaf() = default;
+};
+
+
 
 class RootScene : public IComposite {
 public:
     RootScene(ISceneBase* scene);
     ISceneBase* getScene();
-    const ISceneBase* getScene() const { return m_scene; }
+    const ISceneBase* getScene() const;
 
 private:
     ISceneBase* m_scene;
 };
 
-class ILeaf : public IComponent {
-public:
-    ILeaf(IComposite* parent);
-
-    virtual void Update(const float& deltatime) = 0;
-    virtual void ProcessInput(const sf::Event& event) = 0;
-    virtual void Render() = 0;
-
-
-    Component GetComponentType() override {
-        return Component::ILeaf;
-    }
-    const Component GetComponentType() const override {
-        return Component::ILeaf;
-    }
-};
-
-enum class GameObjectType 
-{
-      DestructibleObject
-    , NonDestructibleObject
-};
-
-class IGameObject : public  ILeaf 
+class IGameObject : public  IComponent 
 {
 public:
-    IGameObject(IComposite* scene);
+    IGameObject(IComposite* scene = nullptr);
     virtual ~IGameObject();
 
     virtual void Update(const float& deltatime) = 0;
@@ -146,6 +267,7 @@ protected:
 private:
     bool m_needDestroy;
 };
+
 //
 //class GameObjectManager 
 //{

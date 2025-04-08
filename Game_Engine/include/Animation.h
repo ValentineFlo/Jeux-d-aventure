@@ -52,7 +52,7 @@ private:
 };
 
 
-class AnimationComponent : public ILeaf
+class AnimationComponent : public IGameObject
 {
 public:
     AnimationComponent(IComposite* parent);
@@ -74,6 +74,18 @@ public:
     std::string getCurrentAnimation() const;
     sf::Sprite& getSprite() { return m_sprite; }
     std::unordered_map<std::string, Animation>& getAnimations() { return m_animations; }
+
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::NonDestructibleObject;
+    }
+
+    Component GetComponentType() override {
+        return Component::ILeaf;
+    }
+    const Component GetComponentType() const override {
+        return Component::ILeaf;
+    }
 
 private:
     std::unordered_map<std::string, Animation> m_animations;

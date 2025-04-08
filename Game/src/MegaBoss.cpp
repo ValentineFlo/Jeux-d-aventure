@@ -552,7 +552,6 @@ void MegaBoss::DeadState::update(MegaBoss* boss, float deltaTime)
 
 MegaBoss::MegaBoss(IComposite* scene, const sf::Vector2f& spawnPosition, BossMode mode, float maxHealth)
     : IGameObject(scene)
-    , IComposite(scene)
     , m_maxLife(maxHealth)
     , m_speed(100.0f)
     , m_currentMode(mode)
@@ -744,7 +743,7 @@ void MegaBoss::Update(const float& deltaTime)
         m_animationComponent->updatePosition(screenPos);
         m_animationComponent->Update(deltaTime);
 
-        IComposite::Update(deltaTime);
+        //IComposite::Update(deltaTime);
         return;
     }
 
@@ -826,13 +825,13 @@ void MegaBoss::Update(const float& deltaTime)
 
     m_shape->setPosition(worldToScreenPosition(m_worldPosition));
 
-    IComposite::Update(deltaTime);
+    //IComposite::Update(deltaTime);
 }
 
 void MegaBoss::Render()
 {
     m_animationComponent->Render();
-    IComposite::Render();
+    //IComposite::Render();
 }
 
 void MegaBoss::HandleCollision(IGameObject* object)
