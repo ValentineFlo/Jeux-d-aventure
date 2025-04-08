@@ -5,8 +5,8 @@
 #include <functional>
 
 Enemy::Enemy(IComposite * scene, const sf::Vector2f & spawnPosition, float maxHealth)
-    : DestructibleObject(scene, maxHealth)
-    , IComposite(scene)
+    :IGameObject(scene)
+	,IComposite(scene)
     , m_maxLife(maxHealth)
     , m_speed(70.0f)
     , m_damage(25.0f)
@@ -36,7 +36,6 @@ Enemy::Enemy(IComposite * scene, const sf::Vector2f & spawnPosition, float maxHe
     m_animationComponent->updatePosition(screenPosition);
     m_animationComponent->playAnimation("idle_down");
 
-    new Life(this, this, Color::Pink);
 }
 
 Enemy::~Enemy()
@@ -180,7 +179,6 @@ void Enemy::ChangeLife(const float& life)
     if (life < 0 && m_isInvulnerable)
         return;
 
-    DestructibleObject::ChangeLife(life);
 
     if (getCurrentLife() <= 0) {
         changeState(EnemyState::DEAD);

@@ -11,12 +11,12 @@ enum class ProjectileType
     Homing
 };
 
-class EntityProjectileBase : public IBullet
+class EntityProjectileBase :  public IBullet
 {
 public:
     EntityProjectileBase(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp);
     virtual void Update(const float& deltatime);
-    virtual void HandleCollision(IGameObject* object) override;
+    virtual void HandleCollision(IGameObject* object);
 
 protected:
     Timer m_animationTimer;
@@ -61,14 +61,14 @@ protected:
     virtual bool shouldIgnoreCollision(IGameObject* object) const override;
 };
 
-class ShieldProjectile : public DestructibleObject, public ILeaf
+class ShieldProjectile : public IGameObject, public ILeaf
 {
 public:
     ShieldProjectile(IComposite* scene, IShapeSFML* owner, float duration, float radius);
     virtual void Render() override;
     virtual void ProcessInput(const sf::Event& event) override {};
     virtual void Update(const float& deltatime);
-    virtual void HandleCollision(IGameObject* object) override;
+    virtual void HandleCollision(IGameObject* object) ;
 
 private:
     IShapeSFML* m_owner;

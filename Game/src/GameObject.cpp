@@ -5,7 +5,7 @@
 #include "RandomNumber.h"
 
 IBorder::IBorder(IComposite* scene, IShapeSFML* object) :
-	NonDestructibleObject(scene), ILeaf(scene), m_ObjectToProtect(object)
+	IGameObject(scene), ILeaf(scene), m_ObjectToProtect(object)
 {
 }
 
@@ -170,7 +170,7 @@ void GameBorder::HandleCollision(IGameObject* object)
 }
 
 ITurret::ITurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff) :
-	NonDestructibleObject(scene)
+	IGameObject(scene)
 	, IComposite(scene)
 	, m_positionDiff(positiondiff)
 	, m_gameObject(game_object)
@@ -336,7 +336,14 @@ void AutoTurret::Fire()
 }
 
 
-IBullet::IBullet(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp) : DestructibleObject(scene, hp), ILeaf(scene), m_gun(gun), m_gunPosition(0, 0), m_gunangle(angle), m_speed(speed), m_size(size), m_animate(animate)
+IBullet::IBullet(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp) 
+	: m_life(hp), ILeaf(scene)
+	, m_gun(gun), m_gunPosition(0, 0)
+	, m_gunangle(angle)
+	, m_speed(speed)
+	, m_size(size)
+	, m_animate(animate)
+	, IGameObject(scene)
 {
 	m_gunPosition = m_gun->getShape()->getPosition();
 }
@@ -384,61 +391,61 @@ void ClassicBullet::HandleCollision(IGameObject* object)
 	ChangeLife(-1);
 }
 
-Life::Life(IComposite* scene, DestructibleObject* game_object, Color color) :NonDestructibleObject(scene), ILeaf(scene), m_object(game_object), m_animate({ "" }), m_animateBackground({ "BlackLife.png" })
-{
-	m_backgroundShape = new RectangleSFML(m_object->getShape()->getSize().x, 10, sf::Vector2f(m_object->getShape()->getPosition().x, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
-	m_shape = new RectangleSFML(m_object->getShape()->getSize().x - 5, 10, sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
-
-	m_backgroundShape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animateBackground.getCurrentPath()));
-	m_sizeDiff = m_object->getShape()->getSize().x / m_object->getCurrentLife();
-	m_animate.resetTexture();
-	switch (color)
-	{
-	case Color::Blue:
-	{
-		m_animate.add("BlueLife.png");
-		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
-	}
-	break;
-	case Color::Orange:
-	{
-		m_animate.add("OrangeLife.png");
-		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
-	}
-	break;
-	case Color::Pink:
-	{
-		m_animate.add("PinkLife.png");
-		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
-	}
-	break;
-	}
-}
-
-Life::~Life()
-{
-	delete m_backgroundShape;
-	m_backgroundShape = nullptr;
-}
-
-void Life::Render()
-{
-	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<RectangleSFML*>(m_backgroundShape)->getShape());
-	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<RectangleSFML*>(m_shape)->getShape());
-}
-
-void Life::Update(const float& deltatime)
-{
-	auto newsize = m_sizeDiff * m_object->getCurrentLife();
-	m_shape->setSize(sf::Vector2f(newsize, m_shape->getSize().y));
-	m_shape->setPosition(sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
-	m_backgroundShape->setPosition(sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
-}
+//Life::Life(IComposite* scene, DestructibleObject* game_object, Color color) :NonDestructibleObject(), ILeaf(scene), m_object(game_object), m_animate({ "" }), m_animateBackground({ "BlackLife.png" })
+//{
+//	m_backgroundShape = new RectangleSFML(m_object->getShape()->getSize().x, 10, sf::Vector2f(m_object->getShape()->getPosition().x, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
+//	m_shape = new RectangleSFML(m_object->getShape()->getSize().x - 5, 10, sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
+//
+//	m_backgroundShape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animateBackground.getCurrentPath()));
+//	m_sizeDiff = m_object->getShape()->getSize().x / m_object->getCurrentLife();
+//	m_animate.resetTexture();
+//	switch (color)
+//	{
+//	case Color::Blue:
+//	{
+//		m_animate.add("BlueLife.png");
+//		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
+//	}
+//	break;
+//	case Color::Orange:
+//	{
+//		m_animate.add("OrangeLife.png");
+//		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
+//	}
+//	break;
+//	case Color::Pink:
+//	{
+//		m_animate.add("PinkLife.png");
+//		m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
+//	}
+//	break;
+//	}
+//}
+//
+//Life::~Life()
+//{
+//	delete m_backgroundShape;
+//	m_backgroundShape = nullptr;
+//}
+//
+//void Life::Render()
+//{
+//	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<RectangleSFML*>(m_backgroundShape)->getShape());
+//	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<RectangleSFML*>(m_shape)->getShape());
+//}
+//
+//void Life::Update(const float& deltatime)
+//{
+//	auto newsize = m_sizeDiff * m_object->getCurrentLife();
+//	m_shape->setSize(sf::Vector2f(newsize, m_shape->getSize().y));
+//	m_shape->setPosition(sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
+//	m_backgroundShape->setPosition(sf::Vector2f(m_object->getShape()->getPosition().x - 5, m_object->getShape()->getPosition().y - m_object->getShape()->getSize().y / 2 - 10));
+//}
 
 
 
 Cursor::Cursor(IComposite* scene) :
-	NonDestructibleObject(scene)
+	IGameObject(scene)
 	, ILeaf(scene)
 	, m_animate({ "Crossair.png","Crossair2.png","Crossair3.png" })
 {
@@ -491,7 +498,7 @@ sf::Vector2f Physics::calculPosition(IShapeSFML* entity, ISceneBase* scene, floa
 
 
 DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, float size) :
-	NonDestructibleObject(scene),
+	IGameObject(scene),
 	ILeaf(scene),
 	m_animate({}),
 	m_animationTimer(0.2f),
@@ -502,7 +509,7 @@ DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f
 }
 
 DecorativeGameObject::DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, const sf::Vector2f& size) :
-	NonDestructibleObject(scene),
+	IGameObject(scene),
 	ILeaf(scene),
 	m_animate({}),
 	m_animationTimer(0.2f),

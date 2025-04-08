@@ -13,16 +13,21 @@ enum class EnemyState {
     DEAD
 };
 
-class Enemy : public DestructibleObject, public IComposite {
+class Enemy : public IGameObject, public IComposite {
 public:
     Enemy(IComposite* scene, const sf::Vector2f& spawnPosition, float maxHealth = 200.0f);
     ~Enemy();
 
     void Update(const float& deltaTime) override;
     void Render() override;
-    void HandleCollision(IGameObject* object) override;
-    void ChangeLife(const float& life) override;
+    void HandleCollision(IGameObject* object);
+    void ChangeLife(const float& life);
 
+    float getCurrentLife() { return m_life; }
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::DestructibleObject;
+    }
 private:
     class IState {
     public:
@@ -80,6 +85,8 @@ private:
     std::string getOrientationString() const;
     Orientation determineOrientation(float angle);
 
+
+    float m_life=10.f;
     float m_maxLife;
     float m_speed;
     float m_damage;

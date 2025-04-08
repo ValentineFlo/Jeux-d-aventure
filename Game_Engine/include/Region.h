@@ -15,7 +15,7 @@ enum RegionType
 class IRegion 
 {
 public:
-    IRegion(float x, float y, float width, float height, IComposite* scene)
+    IRegion(float x, float y, float width, float height)
         : m_x(x)
         , m_y(y)
 		, m_width(width)
@@ -25,7 +25,7 @@ public:
     }
 
     virtual ~IRegion() = default;
-	virtual void FixPosition() = 0;
+	//virtual void FixPosition() = 0;
     virtual AABB getBoundingBox() const = 0; 
     virtual void HandleCollision() = 0;
 

@@ -15,7 +15,7 @@ enum trust
 	, Default = 4
 };
 
-class Cursor : public NonDestructibleObject, public ILeaf
+class Cursor : public IGameObject, public ILeaf
 {
 public:
 	Cursor(IComposite* scene);
@@ -24,7 +24,10 @@ public:
 	void Update(const float& deltatime);
 
 	void Render() override;
-
+	GameObjectType globalGameObjectType() override
+	{
+		return GameObjectType::NonDestructibleObject;
+	}
 private:
 	AnimateSprite m_animate;
 };
@@ -44,7 +47,7 @@ private:
 };
 
 
-class IBorder : public NonDestructibleObject, public ILeaf
+class IBorder :public IGameObject, public ILeaf
 {
 public:
 
@@ -52,6 +55,11 @@ public:
 	void ProcessInput(const sf::Event& event) override = 0;
 	void Update(const float& deltatime);
 	void Render() override = 0;
+	GameObjectType globalGameObjectType() override
+	{
+		return GameObjectType::NonDestructibleObject;
+	}
+
 protected:
 	IShapeSFML* m_ObjectToProtect;
 };
@@ -96,17 +104,17 @@ class WorldBorder : public ExternBorder
 {
 public:
 	WorldBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize, float Securitydistance);
-	void HandleCollision(IGameObject* object) override;
+	void HandleCollision(IGameObject* object) ;
 };
 
 class GameBorder : public ExternBorder
 {
 public:
 	GameBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize);
-	void HandleCollision(IGameObject* object) override;
+	void HandleCollision(IGameObject* object) ;
 };
 
-class ITurret : public NonDestructibleObject, public IComposite
+class ITurret : public IGameObject, public IComposite
 {
 public:
 	ITurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff);
@@ -119,7 +127,10 @@ public:
 	void SetFireRate(const float& fireRate);
 	void SetOverloadGun(const float& overloadcoodown, float MaxShot);
 	IShapeSFML* getGameObject() const { return m_gameObject; }
-
+	GameObjectType globalGameObjectType() override
+	{
+		return GameObjectType::NonDestructibleObject;
+	}
 protected:
 	sf::Vector2f m_positionDiff;
 	IShapeSFML* m_gameObject;
@@ -165,17 +176,28 @@ private:
 
 };
 
-class IBullet : public DestructibleObject, public ILeaf
+class IBullet : public IGameObject, public ILeaf
 {
 public:
 	IBullet(AnimateSprite animate, IComposite* scene, ITurret* gun, float angle, float speed, float size, float hp);
 	void Render() override = 0;
 	void ProcessInput(const sf::Event& event) = 0;
 	void Update(const float& deltatime);
-
+	void ChangeLife(const float& life) {
+		m_life += life;
+		if (m_life <= 0)
+			destroy();
+	}
+	GameObjectType globalGameObjectType() override
+	{
+		return GameObjectType::DestructibleObject;
+	}
+	float getCurrentLife() { return m_life; }
 	ITurret* getTurret() const { return m_gun; }
 
+
 protected:
+	float m_life;
 	ITurret* m_gun;
 	sf::Vector2f m_gunPosition;
 	float m_gunangle;
@@ -191,7 +213,7 @@ public:
 	void Render() override;
 	void ProcessInput(const sf::Event& event) {};
 	void Update(const float& deltatime);
-	void HandleCollision(IGameObject* object) override;
+	void HandleCollision(IGameObject* object) ;
 
 private:
 	Timer m_elapsedTime;
@@ -204,26 +226,26 @@ enum class Color
 	, Orange
 };
 
-class Life : public NonDestructibleObject, public ILeaf
-{
-public:
-	Life(IComposite* scene, DestructibleObject* game_object, Color color);
-	~Life();
-private:
-	void Render() override;
-	void ProcessInput(const sf::Event& event) {};
-	void Update(const float& deltatime);
-protected:
-	DestructibleObject* m_object;
-	IShapeSFML* m_backgroundShape;
-	AnimateSprite m_animate;
-	AnimateSprite m_animateBackground;
-	float m_sizeDiff;
-};
+//class Life : public NonDestructibleObject, public ILeaf
+//{
+//public:
+//	Life(IComposite* scene, DestructibleObject* game_object, Color color);
+//	~Life();
+//private:
+//	void Render() override;
+//	void ProcessInput(const sf::Event& event) {};
+//	void Update(const float& deltatime);
+//protected:
+//	//DestructibleObject* m_object;
+//	IShapeSFML* m_backgroundShape;
+//	AnimateSprite m_animate;
+//	AnimateSprite m_animateBackground;
+//	float m_sizeDiff;
+//};
 
 
 
-class DecorativeGameObject : public NonDestructibleObject, public ILeaf
+class DecorativeGameObject :public IGameObject, public ILeaf
 {
 public:
 	DecorativeGameObject(IComposite* scene, const sf::Vector2f& position, float size);

@@ -52,7 +52,7 @@ struct BossParameters
     static BossParameters getForPhase(BossPhase phase, BossMode mode);
 };
 
-class MegaBoss : public DestructibleObject, public IComposite
+class MegaBoss : public IGameObject, public IComposite
 {
 protected:
     enum State
@@ -151,12 +151,15 @@ protected:
 public:
     MegaBoss(IComposite* scene, const sf::Vector2f& spawnPosition, BossMode mode, float maxHealth);
     virtual ~MegaBoss();
-
+    GameObjectType globalGameObjectType() override
+    {
+        return GameObjectType::DestructibleObject;
+    }
     void ProcessInput(const sf::Event& event) override {};
     void Update(const float& deltatime) override;
     void Render() override;
-    void HandleCollision(IGameObject* object) override;
-    void ChangeLife(const float& life) override;
+    void HandleCollision(IGameObject* object) ;
+    void ChangeLife(const float& life);
 
     float getMaxLife() const { return m_maxLife; }
     float getCurrentLife() const { return m_life; }
@@ -192,6 +195,7 @@ public:
     std::string getOrientationString() const;
 
 protected:
+    float m_life;
     void findTarget();
     void createWeapons(float offset);
     sf::Vector2f worldToScreenPosition(const sf::Vector2f& worldPos) const;

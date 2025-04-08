@@ -77,5 +77,5 @@ private:
 	Timer m_bossSpawnTimer;
 
 	RegionManager* m_regionManager;
-	GameObjectManager m_objectManager;
+
 };

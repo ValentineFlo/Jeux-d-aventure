@@ -280,8 +280,8 @@ void Hero::ReloadState::update(Hero* ship, float deltaTime)
 
 //=========== SHIP IMPLEMENTATION ===========//
 Hero::Hero(IComposite* scene, IShapeSFML* background)
-    : DestructibleObject(scene, 10)
-    , IComposite(scene)
+    : IGameObject(scene)
+     //IComposite(scene)
     , m_background(background)
     , m_angle(0)
     , m_elapsedTime(0.2)
@@ -305,7 +305,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 
-    new Life(this, this, Color::Blue);
+    //new Life(this, this, Color::Blue);
     m_turret = new FixTurret(this, m_shape, sf::Vector2f(35, -25), 0.75);
     m_turret->SetFireRate(0.2f);
     m_turret->SetOverloadGun(5, 30);
@@ -508,8 +508,11 @@ float Hero::anglecalcul()
     return angle;
 }
 
+
 void Hero::HandleCollision(IGameObject* object)
 {
+    //si obj1 = player
+    //object = balle
     if (object->globalGameObjectType() != GameObjectType::DestructibleObject)
         return;
 

@@ -2,18 +2,14 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
+class CollisionRegion : public IRegion, public IComposite
 {
 public:
 
-    CollisionRegion(float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
-        : IRegion(x, y, width, height, scene)
-        , NonDestructibleObject(scene)
+    CollisionRegion(float x, float y, float width, float height, IComposite* scene)
+        : IRegion(x, y, width, height)
         , IComposite(scene)
-<<<<<<< HEAD
-        , m_object(manager)
-=======
->>>>>>> 812f6f72dab72450f8958f492140c38a84aa6a57
+
 
     {
 
@@ -28,7 +24,7 @@ public:
 
     void Update(const float& deltatime) override
     {
-		FixPosition();
+		//FixPosition();
         HandleCollision();
 
     }
@@ -40,24 +36,24 @@ public:
 
     void Render() override
     {
-        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
+        getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
-    void FixPosition() override
-    {
+    // void FixPosition() override
+    // {
 
-        float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-        float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
+    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
 
 
-        float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-        float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
+    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
+    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
 
-        float dotposX = decalX - x;
-        float dotposY = decalY - y;
+    //     float dotposX = decalX - x;
+    //     float dotposY = decalY - y;
 
-        m_shape.setPosition(dotposX, dotposY);
-    }
+    //     m_shape.setPosition(dotposX, dotposY);
+    // }
 
 	AABB getBoundingBox() const override
 	{
@@ -68,19 +64,10 @@ public:
 
     void HandleCollision() override
     {
-<<<<<<< HEAD
-        std::cout << m_object->getSize() << std::endl;
 
-        for (IGameObject* objet : m_object->getAll())
-        {
-            if (objet->GetBoundingBox().Intersects(getBoundingBox()))
-            {
-                std::cout << "Collision!!!!!!!!!!!!!!" << std::endl;
-            }
+        std::cout << "Region" << std::endl;
 
-            return;
-        }
-=======
+
         /*for (IGameObject* objet :)
         {
             if (objet == this) continue;
@@ -93,7 +80,6 @@ public:
             }
             
         }*/
->>>>>>> 812f6f72dab72450f8958f492140c38a84aa6a57
 
     }
 
@@ -102,6 +88,6 @@ public:
 
 private :
     sf::RectangleShape m_shape;
-    GameObjectManager* m_object;
+
 };
 

@@ -197,22 +197,22 @@ void IGameObject::destroy()
     m_needDestroy = true;
 }
 
-DestructibleObject::DestructibleObject(IComposite* scene, const float& life)
-    : IGameObject(scene), m_life(life)
-{
-}
-
-GameObjectType DestructibleObject::globalGameObjectType()
-{
-    return GameObjectType::DestructibleObject;
-}
-
-NonDestructibleObject::NonDestructibleObject(IComposite* scene)
-    : IGameObject(scene)
-{
-}
-
-GameObjectType NonDestructibleObject::globalGameObjectType()
-{
-    return GameObjectType::NonDestructibleObject;
-}
+//DestructibleObject::DestructibleObject( const float& life)
+//    : m_life(life)
+//{
+//}
+//
+//GameObjectType DestructibleObject::globalGameObjectType()
+//{
+//    return GameObjectType::DestructibleObject;
+//}
+//
+//NonDestructibleObject::NonDestructibleObject()
+//    
+//{
+//}
+//
+//GameObjectType NonDestructibleObject::globalGameObjectType()
+//{
+//    return GameObjectType::NonDestructibleObject;
+//}

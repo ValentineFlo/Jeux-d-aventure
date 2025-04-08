@@ -111,7 +111,8 @@ public:
     }
 };
 
-enum class GameObjectType {
+enum class GameObjectType 
+{
       DestructibleObject
     , NonDestructibleObject
 };
@@ -145,80 +146,80 @@ protected:
 private:
     bool m_needDestroy;
 };
+//
+//class GameObjectManager 
+//{
+//public:
+//    void registerObject(IGameObject* obj) 
+//    {
+//        std::cout << "enregistre : " << obj << std::endl;
+//        m_objects.push_back(obj);
+//    }
+//
+//    const std::vector<IGameObject*>& getAll() const 
+//    {
+//        return m_objects;
+//    }
+//
+//    std::vector<IGameObject*> getByType(GameObjectType type) const 
+//    {
+//        std::vector<IGameObject*> result;
+//        for (auto* obj : m_objects)
+//        {
+//            if (obj->globalGameObjectType() == type)
+//                result.push_back(obj);
+//        }
+//        return result;
+//    }
+//    
+//    int getSize()
+//    {
+//        return m_objects.size();
+//    }
+//
+//    void clear() 
+//    {
+//        m_objects.clear();
+//
+//    }
+//
+//private:
+//    std::vector<IGameObject*> m_objects;
+//};
 
-class GameObjectManager 
-{
-public:
-    void registerObject(IGameObject* obj) 
-    {
-        std::cout << "enregistre : " << obj << std::endl;
-        m_objects.push_back(obj);
-    }
 
-    const std::vector<IGameObject*>& getAll() const 
-    {
-        return m_objects;
-    }
-
-    std::vector<IGameObject*> getByType(GameObjectType type) const 
-    {
-        std::vector<IGameObject*> result;
-        for (auto* obj : m_objects)
-        {
-            if (obj->globalGameObjectType() == type)
-                result.push_back(obj);
-        }
-        return result;
-    }
-    
-    int getSize()
-    {
-        return m_objects.size();
-    }
-
-    void clear() 
-    {
-        m_objects.clear();
-
-    }
-
-private:
-    std::vector<IGameObject*> m_objects;
-};
-
-
-class DestructibleObject : public IGameObject 
-{
-public:
-    DestructibleObject(IComposite* scene, const float& life);
-
-    virtual void Update(const float& deltatime) override = 0;
-    virtual void ProcessInput(const sf::Event& event) override = 0;
-    virtual void Render() override = 0;
-
-    virtual void ChangeLife(const float& life) {
-        m_life += life;
-        if (m_life <= 0)
-            destroy();
-    }
-
-    float getCurrentLife() { return m_life; }
-    GameObjectType globalGameObjectType() override;
-
-protected:
-    float m_life;
-};
-
-class NonDestructibleObject : public IGameObject {
-public:
-    NonDestructibleObject(IComposite* scene);
-
-    virtual void Update(const float& deltatime) override = 0;
-    virtual void ProcessInput(const sf::Event& event) override = 0;
-    virtual void Render() override = 0;
-
-    GameObjectType globalGameObjectType() override;
-};
+//class DestructibleObject : public IGameObject 
+//{
+//public:
+//    DestructibleObject(const float& life);
+//
+//    virtual void Update(const float& deltatime) override = 0;
+//    virtual void ProcessInput(const sf::Event& event) override = 0;
+//    virtual void Render() override = 0;
+//
+//    virtual void ChangeLife(const float& life) {
+//        m_life += life;
+//        if (m_life <= 0)
+//            destroy();
+//    }
+//
+//    float getCurrentLife() { return m_life; }
+//    GameObjectType globalGameObjectType() override;
+//
+//protected:
+//    float m_life;
+//};
+//
+//class NonDestructibleObject : public IGameObject {
+//public:
+//    NonDestructibleObject();
+//
+//    virtual void Update(const float& deltatime) override = 0;
+//    virtual void ProcessInput(const sf::Event& event) override = 0;
+//    virtual void Render() override = 0;
+//
+//    GameObjectType globalGameObjectType() override;
+//};
 
 template<typename type, typename type2>
 type getObj(type2* obj) {

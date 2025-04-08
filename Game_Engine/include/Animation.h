@@ -84,7 +84,7 @@ private:
 };
 
 
-class AnimatedGameObject : public DestructibleObject
+class AnimatedGameObject : public IGameObject
 {
 public:
     AnimatedGameObject(IComposite* scene, const float& life = 100.0f);

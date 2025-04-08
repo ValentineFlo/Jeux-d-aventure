@@ -228,7 +228,7 @@ std::string AnimationComponent::getCurrentAnimation() const
 }
 
 AnimatedGameObject::AnimatedGameObject(IComposite* scene, const float& life)
-    : DestructibleObject(scene, life)
+    : IGameObject(scene)
 {
     m_animationComponent = new AnimationComponent(scene);
 }

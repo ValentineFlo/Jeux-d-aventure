@@ -1,13 +1,12 @@
 #pragma once
 #include "Region.h"
 
-class PlateformeRegion : public IRegion, public NonDestructibleObject, public IComposite
+class PlateformeRegion : public IRegion, public IComposite
 {
 public:
 
-	PlateformeRegion(float x, float y, float width, float height, IComposite* scene, GameObjectManager* manager)
-        : IRegion(x, y, width, height, scene)
-        , NonDestructibleObject(scene)
+	PlateformeRegion(float x, float y, float width, float height, IComposite* scene)
+        : IRegion(x, y, width, height)
         , IComposite(scene)
     {}
 
@@ -38,21 +37,21 @@ public:
 
 public :
 
-    void FixPosition() override
-    {
+    // void FixPosition() override
+    // {
 
-        float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-        float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
+    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
 
 
-        float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-        float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
+    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
+    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
 
-        float dotposX = decalX - x;
-        float dotposY = decalY - y;
+    //     float dotposX = decalX - x;
+    //     float dotposY = decalY - y;
 
-        m_shape.setPosition(dotposX, dotposY);
-    }
+    //     m_shape.setPosition(dotposX, dotposY);
+    // }
 
     void HandleCollision() override
     {

@@ -551,7 +551,7 @@ void MegaBoss::DeadState::update(MegaBoss* boss, float deltaTime)
 }
 
 MegaBoss::MegaBoss(IComposite* scene, const sf::Vector2f& spawnPosition, BossMode mode, float maxHealth)
-    : DestructibleObject(scene, maxHealth)
+    : IGameObject(scene)
     , IComposite(scene)
     , m_maxLife(maxHealth)
     , m_speed(100.0f)
@@ -602,7 +602,7 @@ MegaBoss::MegaBoss(IComposite* scene, const sf::Vector2f& spawnPosition, BossMod
 
     createWeapons(70.0f);
 
-    new Life(this, this, Color::Pink);
+    //new Life(this, this, Color::Pink);
 }
 
 
@@ -867,7 +867,10 @@ void MegaBoss::ChangeLife(const float& life)
     if (life < 0 && m_isInvulnerable)
         return;
 
-    DestructibleObject::ChangeLife(life);
+
+    m_life += life;
+    if (m_life <= 0)
+		destroy();
 
     float healthPercentage = getCurrentLife() / m_maxLife;
     BossPhase newPhase;
