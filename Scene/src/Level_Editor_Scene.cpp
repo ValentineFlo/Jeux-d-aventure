@@ -2,7 +2,8 @@
 
 Level_Editor_Scene::Level_Editor_Scene(sf::RenderWindow* window, const float& framerate, TextureCache* texture)
 	:ISceneBase(window, framerate, texture)
-{ }
+{ 
+}
 
 
 void Level_Editor_Scene::Update(const float& deltatime)

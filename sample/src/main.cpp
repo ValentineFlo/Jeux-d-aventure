@@ -19,11 +19,15 @@
 #include "SceneManager.h"
 #include "SFML/Graphics.hpp"
 #include "Game.h"
+#include "Level_Editor_Scene.h"
 #include <GameObject.h>
 
 //TODO
-int main(int argc, char** argv) {
-    SceneManager a(argv[0], 1920, 1080, "CyberpunkShooter"/*,sf::Style::Fullscreen*/);
-    a.AddScene(new Game(a.getWindow(), 240, a.getTextureCache()));
+int main(int argc, char** argv) 
+{
+    SceneManager a(argv[0], 800, 600, "CyberpunkShooter"/*,sf::Style::Fullscreen*/);
+    //a.AddScene(new Game(a.getWindow(), 240, a.getTextureCache()));
+    a.AddScene(new Level_Editor_Scene(a.getWindow(), 240, a.getTextureCache()));
     a.Exe();
+    return 0;
 }

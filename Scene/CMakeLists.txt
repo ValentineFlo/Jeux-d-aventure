@@ -9,6 +9,7 @@ set(HEADERS
  ${HEADER_DIR}/SceneBase.h
  ${HEADER_DIR}/Button.h
  ${HEADER_DIR}/MenuScenes.h
+ ${HEADER_DIR}/Level_Editor_Scene.h
 )
 set(SOURCES
 ${SOURCE_DIR}/ScoreManager.cpp
@@ -16,6 +17,7 @@ ${SOURCE_DIR}/SceneManager.cpp
 ${SOURCE_DIR}/SceneBase.cpp
 ${SOURCE_DIR}/Button.cpp
 ${SOURCE_DIR}/MenuScenes.cpp
+${SOURCE_DIR}/Level_Editor_Scene.cpp
 )
 
 add_library(${PROJECT_NAME}
