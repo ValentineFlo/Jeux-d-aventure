@@ -1,5 +1,7 @@
+#pragma once
 #include <iostream>
 #include <memory>
+#include "IGameObject.h"
 
 enum RegionType
 {
@@ -10,136 +12,37 @@ enum RegionType
     , TELEPORTATION
 };
 
-class IRegion /*: IGameObject*/
+class IRegion 
 {
 public:
+    IRegion(float x, float y, float width, float height)
+        : m_x(x)
+        , m_y(y)
+		, m_width(width)
+		, m_height(height)
+    {
+        
+    }
+
     virtual ~IRegion() = default;
-    virtual void exe() = 0;
-    virtual void update() = 0;
-    virtual void render() = 0;
-};
+	//virtual void FixPosition() = 0;
+    virtual AABB getBoundingBox() const = 0; 
+    virtual void HandleCollision() = 0;
 
+    float getX() const { return m_x; }
+    float getY() const { return m_y; }
+	float getWidth() const { return m_width; }
+	float getHeight() const { return m_height; }
 
-
-class CollisionRegion : public IRegion
-{
-public:
-
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe collision" << std::endl;
-    }
-
-    void update() override
-    {
-        std::cout << "lets goooooooo update collision" << std::endl;
-    }
-
-    void render() override
-    {
-
-        std::cout << "lets goooooooo render collision" << std::endl;
-    }
-
-};
-
-class DestructeurRegion : public IRegion
-{
-public:
-
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe destru" << std::endl;
-    }
-
-    void update() override
-    {
-        std::cout << "lets goooooooo update destru" << std::endl;
-    }
-
-    void render() override
-    {
-
-        std::cout << "lets goooooooo render destru" << std::endl;
-    }
-
-};
-
-class ResuciteurRegion : public IRegion
-{
-public:
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe resuciteur" << std::endl;
-    }
-
-    void update() override
-    {
-        std::cout << "lets goooooooo update resuciteur" << std::endl;
-    }
-
-    void render() override
-    {
-
-        std::cout << "lets goooooooo render resuciteur" << std::endl;
-    }
-};
-
-class PlateformeRegion : public IRegion
-{
-public:
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe plateforme" << std::endl;
-    }
-
-    void update() override
-    {
-        std::cout << "lets goooooooo update plateforme" << std::endl;
-    }
-
-    void render() override
-    {
-
-        std::cout << "lets goooooooo render plateforme" << std::endl;
-    }
-};
-
-
-class TeleportationRegion : public IRegion
-{
-public:
-    void exe() override
-    {
-        std::cout << "lets goooooooo exe teleportation" << std::endl;
-    }
-
-    void update() override
-    {
-        std::cout << "lets goooooooo update teleportation" << std::endl;
-    }
-
-    void render() override
-    {
-
-        std::cout << "lets goooooooo render teleportation" << std::endl;
-    }
-};
-
-class Region : public IRegion
-{
-public:
-    Region(RegionType type, float x, float y);
-
-    void exe() override;
-
-    void update() override;
-
-    void render() override;
-
-private:
-    float m_x, m_y;
+	void setX(float x) { m_x = x; }
+	void setY(float y) { m_y = y; }
+	void setWidth(float width) { m_width = width; }
+	void setHeight(float height) { m_height = height; }
 
 protected:
-    std::unique_ptr<IRegion> m_typeptr;
+    float m_x, m_y;
+    float m_width, m_height;
+
 };
+
+
