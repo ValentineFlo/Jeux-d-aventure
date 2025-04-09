@@ -16,7 +16,7 @@ void EntityProjectileBase::Update(const float& deltatime)
         std::cos(angleRad) * m_speed * m_scene->getRoot()->getScene()->getRefreshTime().asSeconds(),
         std::sin(angleRad) * m_speed * m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
     );
-    
+
     if (m_useAbsolutePosition) {
         m_absolutePosition += movement;
 
@@ -124,7 +124,8 @@ bool FastProjectile::shouldIgnoreCollision(IGameObject* object) const
 }
 
 ShieldProjectile::ShieldProjectile(IComposite* scene, IShapeSFML* owner, float duration, float radius)
-    : IGameObject(scene)
+    : DestructibleObject(scene, 100.0f)
+    , ILeaf(scene)
     , m_owner(owner)
     , m_animate({ "PlayerBulle.png" })
     , m_duration(duration)

@@ -117,7 +117,7 @@ sf::IntRect Animation::getCurrentFrameRect() const
 }
 
 AnimationComponent::AnimationComponent(IComposite* parent)
-    : IGameObject(parent)
+    : ILeaf(parent)
     , m_currentAnimation("")
     , m_scale(1.0f, 1.0f)
     , m_playing(false)
@@ -228,7 +228,7 @@ std::string AnimationComponent::getCurrentAnimation() const
 }
 
 AnimatedGameObject::AnimatedGameObject(IComposite* scene, const float& life)
-    : IGameObject(scene)
+    : DestructibleObject(scene, life)
 {
     m_animationComponent = new AnimationComponent(scene);
 }

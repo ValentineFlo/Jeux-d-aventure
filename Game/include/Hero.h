@@ -3,7 +3,7 @@
 #include "MegaBoss.h"
 #include "Animation.h"
 
-class Hero : public IGameObject
+class Hero : public DestructibleObject, public IComposite
 {
 protected:
     enum State
@@ -80,8 +80,8 @@ public:
     void Render() override;
 
     float anglecalcul();
-    void HandleCollision(IGameObject* object);
-    
+    void HandleCollision(IGameObject* object) override;
+    void ChangeLife(const float& life) override;
 
     void ChangeState(const State& newState);
     float distanceToBoss(MegaBoss* boss);
@@ -93,24 +93,8 @@ public:
 
     std::string getOrientationString() const;
 
-    void ChangeLife(const float& life);
-
-    float getCurrentLife() { return m_life; }
-    GameObjectType globalGameObjectType() override
-	{
-		return GameObjectType::DestructibleObject;
-	}
-
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
 
 private:
-    float m_life=10.f;
-
     IShapeSFML* m_background;
     IShapeSFML* m_target;
 

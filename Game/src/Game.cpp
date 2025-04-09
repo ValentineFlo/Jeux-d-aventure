@@ -11,12 +11,8 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 {
 	m_Background = new SquareSFML(10000, sf::Vector2f(0, 0));
 	m_Background->setTexture(m_texture->getTexture("Map.png"));
-	//Hero* m_hero = new Hero(this, m_Background);
-	m_regionManager = new RegionManager();
-	m_regionManager->addRegion(RegionType::COLLISIONABLE, 500, 400, 300, 300, this);
-
-	new Hero(this, m_Background);
-	//new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
+	m_hero = new Hero(this, m_Background);
+	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);
 	new GameBorder(this, m_Background, Position::Up, 5);
 	new GameBorder(this, m_Background, Position::Left, 5);
@@ -30,8 +26,6 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	//sf::Vector2f bossSpawnPosition(GetCenterWindow().x, GetCenterWindow().y - 300);
 	//m_bossSpawner->SetSpawnPosition(bossSpawnPosition);
 
-
-
 	getWindow()->setMouseCursorVisible(false);
 }
 
@@ -40,12 +34,9 @@ void Game::Update(const float& deltatime)
 	for (auto& obj : getChildren())
 	{
 		obj->Update(deltatime);
-		std::cout << "[Scene] update cycle" << std::endl;
-
 	}
 
 	cursor.Update(deltatime);
-
 	//m_spawner->Spawn();
 
 	//m_bossSpawnTimer.NextTIck(deltatime);
@@ -63,16 +54,12 @@ void Game::Update(const float& deltatime)
 
 void Game::ProcessInput(const sf::Event& event)
 {
-	
-	for(auto it = m_listGameObject.begin();it!= m_listGameObject.end();++it)
+	for (auto& obj : getChildren())
 	{
-		(*it)->ProcessInput(event);
+		obj->ProcessInput(event);
 	}
-	// for (auto& obj : getChildren())
-	// {
-	// 	obj->ProcessInput(event);
-	// }
-	// cursor.ProcessInput(event);
+	cursor.ProcessInput(event);
+
 }
 
 void Game::Render()
@@ -83,5 +70,4 @@ void Game::Render()
 		obj->Render();
 	}
 	cursor.Render();
-
 }

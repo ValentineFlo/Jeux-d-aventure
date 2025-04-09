@@ -51,16 +51,16 @@ sf::Vector2f ISceneBase::getBackgroundSize()
 sf::Vector2f ISceneBase::getLeftTopCorner()
 {
 	sf::Vector2f result;
-	result.x = (m_Background->getPosition().x + (m_Background->getSize().x / 2));
-	result.y = (m_Background->getPosition().y + (m_Background->getSize().y / 2));
+	result.x = (m_Background->getPosition().x - (m_Background->getSize().x / 2));
+	result.y = (m_Background->getPosition().y - (m_Background->getSize().y / 2));
 	return result;
 }
 
 sf::Vector2f ISceneBase::getRightBotomCorner()
 {
 	sf::Vector2f result;
-	result.x = (m_Background->getPosition().x - (m_Background->getSize().x / 2));
-	result.y = (m_Background->getPosition().y - (m_Background->getSize().y / 2));
+	result.x = (m_Background->getPosition().x + (m_Background->getSize().x / 2));
+	result.y = (m_Background->getPosition().y + (m_Background->getSize().y / 2));
 	return result;
 }
 

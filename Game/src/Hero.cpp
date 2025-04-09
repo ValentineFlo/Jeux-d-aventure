@@ -280,8 +280,8 @@ void Hero::ReloadState::update(Hero* ship, float deltaTime)
 
 //=========== SHIP IMPLEMENTATION ===========//
 Hero::Hero(IComposite* scene, IShapeSFML* background)
-    : IGameObject(scene)
-     //IComposite(scene)
+    : DestructibleObject(scene, 10)
+    , IComposite(scene)
     , m_background(background)
     , m_angle(0)
     , m_elapsedTime(0.2)
@@ -294,7 +294,6 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
     , m_meleeAttackTimer(2.0f)
     , m_currentOrientation(Orientation::DOWN)
 {
-
     m_shape = new SquareSFML(32, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 
@@ -305,7 +304,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 
-    //new Life(this, this, Color::Blue);
+    new Life(this, this, Color::Blue);
     m_turret = new FixTurret(this, m_shape, sf::Vector2f(35, -25), 0.75);
     m_turret->SetFireRate(0.2f);
     m_turret->SetOverloadGun(5, 30);
@@ -412,11 +411,8 @@ void Hero::physics()
 
 void Hero::Update(const float& deltatime)
 {
-
-
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
-
 
     m_strafe = { false, false, false, false };
 
@@ -459,15 +455,13 @@ void Hero::Update(const float& deltatime)
     m_background->setPosition(static_cast<Physics*>(m_physics)->calculPosition(
         m_background, m_scene->getRoot()->getScene(), m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()));
 
-
     m_animationComponent->updatePosition(m_shape->getPosition());
 
     m_animationComponent->Update(deltatime);
 
     m_meleeAttackTimer.NextTIck(deltatime);
-    //IComposite::Update(deltatime);
+    IComposite::Update(deltatime);
     m_invisibility.NextTIck(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
-
 }
 
 void Hero::Render()
@@ -495,7 +489,7 @@ void Hero::Render()
         m_scene->getRoot()->getScene()->getWindow()->draw(state->meleeHitbox->getShape());
     }
 
-    //IComposite::Render();
+    IComposite::Render();
 }
 
 float Hero::anglecalcul()
@@ -508,11 +502,8 @@ float Hero::anglecalcul()
     return angle;
 }
 
-
 void Hero::HandleCollision(IGameObject* object)
 {
-    //si obj1 = player
-    //object = balle
     if (object->globalGameObjectType() != GameObjectType::DestructibleObject)
         return;
 

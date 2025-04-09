@@ -39,10 +39,9 @@ void Colision::HandleCollision(std::vector <IComponent*> objects)
 
 bool Colision::Compose(IComponent* lhs, IComponent* rhs)
 {
-	//cursor et animation et DecorativeGameObject et Iborder et Ibullet= Leaf
 	if (lhs == rhs)
 		return true;
-	if (lhs->GetComponentType() == Component::IComposite) 
+	if (lhs->GetComponentType() == Component::IComposite)
 	{
 		auto lhsCompose = static_cast<IComposite*>(lhs)->getFullTree();
 		for (auto tree : lhsCompose)

@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #include "MegaBoss.h"
 
-ISpawner::ISpawner(IComposite* scene, const size_t& maxEntity) :IGameObject(scene), m_Scene(scene), m_maxEntity(maxEntity), m_SpawnZone(sf::Vector2f(0, 0), sf::Vector2f(0, 0)), m_RestrictedArea(sf::Vector2f(0, 0), sf::Vector2f(0, 0))
+ISpawner::ISpawner(IComposite* scene, const size_t& maxEntity) :IComposite(scene), m_Scene(scene), m_maxEntity(maxEntity), m_SpawnZone(sf::Vector2f(0, 0), sf::Vector2f(0, 0)), m_RestrictedArea(sf::Vector2f(0, 0), sf::Vector2f(0, 0))
 {
 	m_SpawnZone.Pmin = scene->getRoot()->getScene()->getLeftTopCorner();
 	m_SpawnZone.Pmax = (scene->getRoot()->getScene()->getRightBotomCorner());
@@ -15,7 +15,7 @@ ISpawner::ISpawner(IComposite* scene, const size_t& maxEntity) :IGameObject(scen
 
 void ISpawner::Render()
 {
-	//IComposite::Render();
+	IComposite::Render();
 }
 
 void ISpawner::Update(const float& deltatime)
@@ -24,7 +24,7 @@ void ISpawner::Update(const float& deltatime)
 	m_RestrictedArea.Pmin.y = m_Scene->getRoot()->getScene()->GetCenterWindow().y - m_Scene->getRoot()->getScene()->getWindow()->getSize().y / 2;
 	m_RestrictedArea.Pmax.x = m_Scene->getRoot()->getScene()->GetCenterWindow().x + m_Scene->getRoot()->getScene()->getWindow()->getSize().x / 2;
 	m_RestrictedArea.Pmax.y = m_Scene->getRoot()->getScene()->GetCenterWindow().y + m_Scene->getRoot()->getScene()->getWindow()->getSize().y / 2;
-	//IComposite::Update(deltatime);
+	IComposite::Update(deltatime);
 }
 
 
