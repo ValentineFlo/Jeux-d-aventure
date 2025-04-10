@@ -1,13 +1,13 @@
 #pragma once
 #include "Region.h"
 
-class TeleportationRegion : public IRegion, public IGameObject
+class TeleportationRegion : public IRegion, public NonDestructibleObject
 {
 public:
 
 	TeleportationRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IGameObject(scene)
+        , NonDestructibleObject(scene)
     {}
 
     void Update(const float& deltatime) override
@@ -35,21 +35,21 @@ public:
 	float getY() const { return m_y; }
 
 
-    // void FixPosition() override
-    // {
+     void FixPosition() override
+     {
 
-    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+         float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
+         float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
 
 
-    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
+         float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
+         float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
 
-    //    m_x = decalX - x;
-    //    m_y = decalY - y;
+        m_x = decalX - x;
+        m_y = decalY - y;
 
-    //     m_shape.setPosition(m_x, m_y);
-    // }
+         m_shape.setPosition(m_x, m_y);
+     }
 
     void HandleCollision() override
     {
@@ -63,12 +63,7 @@ public:
         //    }
         //}
     }
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
+
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;

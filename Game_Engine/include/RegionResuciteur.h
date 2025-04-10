@@ -1,13 +1,13 @@
 #pragma once
 #include "Region.h"
 
-class ResuciteurRegion : public IRegion, public IGameObject
+class ResuciteurRegion : public IRegion, public NonDestructibleObject
 {
 public:
 
     ResuciteurRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IGameObject(scene)
+        , NonDestructibleObject(scene)
     {}
 
 
@@ -35,21 +35,21 @@ public:
     float getY() const { return m_y; }
 
 
-    // void FixPosition() override
-    // {
+     void FixPosition() override
+     {
 
-    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+         float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
+         float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
 
 
-    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
+         float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
+         float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
 
-    //     float dotposX = decalX - x;
-    //     float dotposY = decalY - y;
+         float dotposX = decalX - x;
+         float dotposY = decalY - y;
 
-    //     m_shape.setPosition(dotposX, dotposY);
-    // }
+         m_shape.setPosition(dotposX, dotposY);
+     }
 
     void HandleCollision() override
     {
@@ -65,12 +65,8 @@ public:
 
 
     }
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
+    
+
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;

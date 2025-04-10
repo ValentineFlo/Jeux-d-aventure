@@ -2,14 +2,18 @@
 #include "Region.h"
 #include "SceneBase.h"
 
-class CollisionRegion : public IRegion, public IGameObject
+class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
     CollisionRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IGameObject(scene)
-
+        , NonDestructibleObject(scene)
+        , IComposite(scene)
+        , m_x(x)
+        , m_y(y)
+        , m_width(width)
+        , m_height(height)
 
     {
 
@@ -24,9 +28,8 @@ public:
 
     void Update(const float& deltatime) override
     {
-		//FixPosition();
+		FixPosition();
         HandleCollision();
-
     }
 
     void ProcessInput(const sf::Event& event) 
@@ -36,24 +39,21 @@ public:
 
     void Render() override
     {
-        getRoot()->getScene()->getWindow()->draw(m_shape);
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
-    // void FixPosition() override
-    // {
+     void FixPosition() override
+     {
+         sf::Vector2f topLeft = m_scene->getRoot()->getScene()->GetCenterWindow();
+         sf::Vector2f screenPos(m_x - topLeft.x, m_y - topLeft.y );
+         m_shape.setPosition(screenPos);
 
-    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+         std::cout << screenPos.x << " " << screenPos.y << std::endl;
 
+         m_shape.setPosition(screenPos);
+         //std::cout << dotposX << " " << dotposY << std::endl;
 
-    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
-
-    //     float dotposX = decalX - x;
-    //     float dotposY = decalY - y;
-
-    //     m_shape.setPosition(dotposX, dotposY);
-    // }
+     }
 
 	AABB getBoundingBox() const override
 	{
@@ -64,8 +64,6 @@ public:
 
     void HandleCollision() override
     {
-
-        std::cout << "Region" << std::endl;
 
 
         /*for (IGameObject* objet :)
@@ -87,12 +85,6 @@ public:
     float getX() const { return m_x; }
     float getY() const { return m_y; }
 
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;
@@ -100,6 +92,7 @@ public:
 
 private :
     sf::RectangleShape m_shape;
+    float m_x, m_y, m_width, m_height;
 
 };
 

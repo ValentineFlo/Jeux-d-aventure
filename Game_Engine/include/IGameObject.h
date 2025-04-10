@@ -22,13 +22,15 @@ class RootScene;
 class ISceneBase;
 class IComposite;
 
-enum class Component {
+enum class Component 
+{
     IComposite,
     ILeaf,
     IGameObject
 };
 
-class IComponent {
+class IComponent 
+{
 public:
     IComponent(IComposite* parent);
     virtual ~IComponent();

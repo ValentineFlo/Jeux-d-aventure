@@ -34,7 +34,6 @@ public:
 
     void addRegion(RegionType type, float x, float y, float width, float height, IComposite* scene)
     {
-
         m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, scene));
     }
     

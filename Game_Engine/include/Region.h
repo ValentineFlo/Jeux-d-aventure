@@ -25,7 +25,7 @@ public:
     }
 
     virtual ~IRegion() = default;
-	//virtual void FixPosition() = 0;
+	virtual void FixPosition() = 0;
     virtual AABB getBoundingBox() const = 0; 
     virtual void HandleCollision() = 0;
 
