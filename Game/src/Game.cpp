@@ -13,6 +13,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	m_Background->setTexture(m_texture->getTexture("Map.png"));
 	m_hero = new Hero(this, m_Background);
 	m_regionManager.addRegion(COLLISIONABLE, 100.0f, 100.0f, 900.0f, 500.0f, this);
+	m_regionManager.addRegion(DESTRUCTEUR, 300.0f, 300.0f, 400.0f, 400.0f, this);
 
 	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);

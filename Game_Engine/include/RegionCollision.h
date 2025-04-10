@@ -46,12 +46,9 @@ public:
      {
          sf::Vector2f topLeft = m_scene->getRoot()->getScene()->GetCenterWindow();
          sf::Vector2f screenPos(m_x - topLeft.x, m_y - topLeft.y );
-         m_shape.setPosition(screenPos);
-
-         std::cout << screenPos.x << " " << screenPos.y << std::endl;
 
          m_shape.setPosition(screenPos);
-         //std::cout << dotposX << " " << dotposY << std::endl;
+
 
      }
 
@@ -66,19 +63,18 @@ public:
     {
 
 
-        /*for (IGameObject* objet :)
+        for (IComponent* component : m_parent->getChildren())
         {
+            IGameObject* objet = dynamic_cast<IGameObject*>(component);
             if (objet == this) continue;
 
             if (getBoundingBox().Intersects(objet->GetBoundingBox()))
             {
-                std::cout << "Collision avec : " << objet << std::endl;
+                std::cout << "Collision avec : " << objet->GetBoundingBox().Amin.x << " " << objet->GetBoundingBox().Amin.y << std::endl;
 
-                objet->getShape()->setPosition(objet->getLastPosition());
+ /*               objet->getShape()->setPosition(objet->getLastPosition());*/
             }
-            
-        }*/
-
+        }
     }
 
 
@@ -89,6 +85,7 @@ public:
     {
         return GameObjectType::NonDestructibleObject;
     }
+
 
 private :
     sf::RectangleShape m_shape;
