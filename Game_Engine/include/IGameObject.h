@@ -2,13 +2,16 @@
 #include "SFML/Graphics.hpp"
 #include <vector>
 #include <memory>
+#include <iostream>
 
-struct AABB {
+struct AABB 
+{
     AABB(sf::Vector2f amin, sf::Vector2f amax) : Amin(amin), Amax(amax) {}
     sf::Vector2f Amin;
     sf::Vector2f Amax;
 
-    bool Intersects(const AABB& other) const {
+    bool Intersects(const AABB& other) const 
+    {
         return !(Amax.x < other.Amin.x || Amin.x > other.Amax.x ||
             Amax.y < other.Amin.y || Amin.y > other.Amax.y);
     }
@@ -158,6 +161,26 @@ public:
 
     float getCurrentLife() { return m_life; }
     GameObjectType globalGameObjectType() override;
+
+
+    AABB GetBoundingBox() override
+    {
+        if (!m_shape)
+        {
+            std::cerr << "[ERREUR] m_shape est nullptr dans getBoundingBox !" << std::endl;
+            return AABB(sf::Vector2f(0, 0), sf::Vector2f(0, 0));
+        }
+
+        sf::Vector2f pos = m_shape->getPosition();
+        sf::Vector2f size = m_shape->getSize();
+        sf::Vector2f half = size / 2.0f;
+        sf::Vector2f truc = pos - half;
+        sf::Vector2f toto = pos + half;
+
+        std::cout << truc.x << " et " << truc.y << " " << toto.x << toto.y << std::endl;
+
+        return AABB(pos - half, pos + half);
+    }
 
 protected:
     float m_life;

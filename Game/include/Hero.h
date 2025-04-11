@@ -121,5 +121,4 @@ private:
     Orientation determineOrientation(float angle);
     Orientation m_currentOrientation;
 
-
 };

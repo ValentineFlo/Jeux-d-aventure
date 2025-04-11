@@ -61,20 +61,30 @@ public:
 
     void HandleCollision() override
     {
+        AABB regionBox = getBoundingBox();
 
-
-        for (IComponent* component : m_parent->getChildren())
+        for (IComponent* comp : m_scene->getRoot()->getFullTree())
         {
-            IGameObject* objet = dynamic_cast<IGameObject*>(component);
-            if (objet == this) continue;
+            IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+            if (!obj || obj == this) 
+                continue;
 
-            if (getBoundingBox().Intersects(objet->GetBoundingBox()))
+            if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                continue;
+
+            AABB objetBox = obj->GetBoundingBox();
+
+            if (regionBox.Intersects(objetBox))
             {
-                std::cout << "Collision avec : " << objet->GetBoundingBox().Amin.x << " " << objet->GetBoundingBox().Amin.y << std::endl;
+                std::cout << "Collision avec : " << typeid(*obj).name() << std::endl;
+                // Tu peux agir ici : bloquer le Hero, faire rebondir, etc.
+                obj->HandleCollision(this);
 
- /*               objet->getShape()->setPosition(objet->getLastPosition());*/
+                std::cout << obj->GetBoundingBox().Amin.x << " " << obj->GetBoundingBox().Amin.y << " " << std::endl;
+                std::cout << obj->GetBoundingBox().Amax.x << " " << obj->GetBoundingBox().Amax.y << " " << std::endl;
             }
         }
+       
     }
 
 
@@ -90,6 +100,5 @@ public:
 private :
     sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;
-
 };
 

@@ -294,6 +294,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
     , m_meleeAttackTimer(2.0f)
     , m_currentOrientation(Orientation::DOWN)
 {
+
     m_shape = new SquareSFML(32, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 
@@ -411,6 +412,7 @@ void Hero::physics()
 
 void Hero::Update(const float& deltatime)
 {
+
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
 
@@ -479,9 +481,11 @@ void Hero::Render()
         debugRect.setOrigin(frameSize.x * scale / 2.0f, frameSize.y * scale / 2.0f);
         debugRect.setPosition(pos);
         debugRect.setFillColor(sf::Color::Transparent);
-
+        debugRect.setOutlineColor(sf::Color::Red);
+        debugRect.setOutlineThickness(1.5f);
         m_scene->getRoot()->getScene()->getWindow()->draw(debugRect);
     }
+
 
     HandAttackState* state = dynamic_cast<HandAttackState*>(m_currentState);
     if (state && state->meleeHitbox)
@@ -506,6 +510,10 @@ void Hero::HandleCollision(IGameObject* object)
 {
     if (object->globalGameObjectType() != GameObjectType::DestructibleObject)
         return;
+
+    AABB myBox = this->getShape()->GetBoundingBox();
+    
+
 
     ChangeLife(-1);
 }
@@ -622,3 +630,6 @@ std::string Hero::getOrientationString() const
         return "down";
     }
 }
+
+
+
