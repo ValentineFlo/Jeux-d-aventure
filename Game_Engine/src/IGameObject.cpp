@@ -203,6 +203,24 @@ GameObjectType DestructibleObject::globalGameObjectType()
     return GameObjectType::DestructibleObject;
 }
 
+AABB DestructibleObject::GetBoundingBox()
+{
+    if (!m_shape)
+    {
+        return AABB(sf::Vector2f(0, 0), sf::Vector2f(0, 0));
+    }
+
+    sf::Vector2f pos = m_shape->getPosition();
+    sf::Vector2f size = m_shape->getSize();
+    sf::Vector2f half = size / 2.0f;
+    sf::Vector2f truc = pos - half;
+    sf::Vector2f toto = pos + half;
+
+
+    return AABB(pos - half, pos + half);
+}
+
+
 NonDestructibleObject::NonDestructibleObject(IComposite* scene)
     : IGameObject(scene)
 {

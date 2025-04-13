@@ -113,12 +113,14 @@ public:
     }
 };
 
-enum class GameObjectType {
+enum class GameObjectType 
+{
     DestructibleObject,
     NonDestructibleObject
 };
 
-class IGameObject {
+class IGameObject 
+{
 public:
     IGameObject(IComposite* scene);
     virtual ~IGameObject();
@@ -145,7 +147,8 @@ private:
     bool m_needDestroy;
 };
 
-class DestructibleObject : public IGameObject {
+class DestructibleObject : public IGameObject 
+{
 public:
     DestructibleObject(IComposite* scene, const float& life);
 
@@ -163,24 +166,7 @@ public:
     GameObjectType globalGameObjectType() override;
 
 
-    AABB GetBoundingBox() override
-    {
-        if (!m_shape)
-        {
-            std::cerr << "[ERREUR] m_shape est nullptr dans getBoundingBox !" << std::endl;
-            return AABB(sf::Vector2f(0, 0), sf::Vector2f(0, 0));
-        }
-
-        sf::Vector2f pos = m_shape->getPosition();
-        sf::Vector2f size = m_shape->getSize();
-        sf::Vector2f half = size / 2.0f;
-        sf::Vector2f truc = pos - half;
-        sf::Vector2f toto = pos + half;
-
-        std::cout << truc.x << " et " << truc.y << " " << toto.x << toto.y << std::endl;
-
-        return AABB(pos - half, pos + half);
-    }
+    AABB GetBoundingBox() override;
 
 protected:
     float m_life;

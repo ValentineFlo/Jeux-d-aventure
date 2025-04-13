@@ -76,12 +76,14 @@ public:
 
             if (regionBox.Intersects(objetBox))
             {
-                std::cout << "Collision avec : " << typeid(*obj).name() << std::endl;
-                // Tu peux agir ici : bloquer le Hero, faire rebondir, etc.
+                std::cout << "Collision avec : " << typeid(*this).name()<< " " << typeid(*obj).name() << std::endl;
                 obj->HandleCollision(this);
 
-                std::cout << obj->GetBoundingBox().Amin.x << " " << obj->GetBoundingBox().Amin.y << " " << std::endl;
-                std::cout << obj->GetBoundingBox().Amax.x << " " << obj->GetBoundingBox().Amax.y << " " << std::endl;
+                std::cout << objetBox.Amin.x << " " << objetBox.Amin.y << std::endl;
+                std::cout << objetBox.Amax.x << " " << objetBox.Amax.y << std::endl;
+
+                std::cout << regionBox.Amin.x << " " << regionBox.Amin.y << std::endl;
+                std::cout << regionBox.Amax.x << " " << regionBox.Amax.y << std::endl;
             }
         }
        

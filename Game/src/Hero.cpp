@@ -307,7 +307,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
 
     new Life(this, this, Color::Blue);
     m_turret = new FixTurret(this, m_shape, sf::Vector2f(35, -25), 0.75);
-    m_turret->SetFireRate(0.2f);
+    m_turret->SetFireRate(0.2f); 
     m_turret->SetOverloadGun(5, 30);
     m_turret->setBullet(0, 0, 0);
 
@@ -416,16 +416,16 @@ void Hero::Update(const float& deltatime)
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
 
-    m_strafe = { false, false, false, false };
+    //m_strafe = { false, false, false, false };
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-        m_strafe[trust::Up] = true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        m_strafe[trust::Down] = true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-        m_strafe[trust::Left] = true;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        m_strafe[trust::Right] = true;
+    //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
+    //    m_strafe[trust::Up] = true;
+    //if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    //    m_strafe[trust::Down] = true;
+    //if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    //    m_strafe[trust::Left] = true;
+    //if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    //    m_strafe[trust::Right] = true;
 
     m_angle = anglecalcul();
 
