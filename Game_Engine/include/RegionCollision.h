@@ -6,7 +6,7 @@ class CollisionRegion : public IRegion, public NonDestructibleObject, public ICo
 {
 public:
 
-    CollisionRegion(float x, float y, float width, float height, IComposite* scene)
+    CollisionRegion(float x, float y, float width, float height, IShapeSFML* game_object, IComposite* scene)
         : IRegion(x, y, width, height)
         , NonDestructibleObject(scene)
         , IComposite(scene)
@@ -14,9 +14,9 @@ public:
         , m_y(y)
         , m_width(width)
         , m_height(height)
+        , m_game_object(game_object)
 
     {
-
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y); 
         m_shape.setFillColor(sf::Color(0, 0, 0, 0));
@@ -29,8 +29,11 @@ public:
     void Update(const float& deltatime) override
     {
 		FixPosition();
+        
+
         HandleCollision();
     }
+
 
     void ProcessInput(const sf::Event& event) 
     {
@@ -42,20 +45,24 @@ public:
         m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
-     void FixPosition() override
-     {
-         sf::Vector2f topLeft = m_scene->getRoot()->getScene()->GetCenterWindow();
-         sf::Vector2f screenPos(m_x - topLeft.x, m_y - topLeft.y );
+    void FixPosition() override
+    {
+        m_shape.setSize(sf::Vector2f(m_width, m_height));
+        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
-         m_shape.setPosition(screenPos);
+        if (m_game_object)
+        {
+            sf::Vector2f basePos = m_game_object->getPosition();
+            m_shape.setPosition(basePos);
+        }
+    }
 
-
-     }
 
 	AABB getBoundingBox() const override
 	{
-		return AABB(sf::Vector2f(m_x, m_y), sf::Vector2f(m_x + m_width, m_y + m_height));
-
+        sf::Vector2f pos = m_shape.getPosition();
+        sf::Vector2f half = m_shape.getSize() / 2.f;
+        return AABB(pos - half, pos + half);
 	}
 
 
@@ -79,11 +86,7 @@ public:
                 std::cout << "Collision avec : " << typeid(*this).name()<< " " << typeid(*obj).name() << std::endl;
                 obj->HandleCollision(this);
 
-                std::cout << objetBox.Amin.x << " " << objetBox.Amin.y << std::endl;
-                std::cout << objetBox.Amax.x << " " << objetBox.Amax.y << std::endl;
-
-                std::cout << regionBox.Amin.x << " " << regionBox.Amin.y << std::endl;
-                std::cout << regionBox.Amax.x << " " << regionBox.Amax.y << std::endl;
+                
             }
         }
        
@@ -102,5 +105,6 @@ public:
 private :
     sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;
+    IShapeSFML* m_game_object;
 };
 

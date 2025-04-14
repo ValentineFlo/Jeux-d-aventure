@@ -5,7 +5,7 @@ class DestructeurRegion : public IRegion, public NonDestructibleObject, public I
 {
 public:
 
-    DestructeurRegion(float x, float y, float width, float height, IComposite* scene)
+    DestructeurRegion(float x, float y, float width, float height, IShapeSFML* game_object, IComposite* scene)
         : IRegion(x, y, width, height)
         , NonDestructibleObject(scene)
         , IComposite(scene)
@@ -13,6 +13,7 @@ public:
         , m_y(y)
         , m_width(width)
         , m_height(height)
+        , m_game_object(game_object)
     {
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y);
@@ -39,6 +40,18 @@ public:
         m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
+    void FixPosition() override
+    {
+        m_shape.setSize(sf::Vector2f(m_width, m_height));
+        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+
+        if (m_game_object)
+        {
+            sf::Vector2f basePos = m_game_object->getPosition();
+            m_shape.setPosition(basePos);
+        }
+    }
+
     AABB getBoundingBox() const override
     {
         return AABB(sf::Vector2f(m_x, m_y), sf::Vector2f(m_x + m_width, m_y + m_height));
@@ -47,16 +60,6 @@ public:
     float getX() const { return m_x; }
     float getY() const { return m_y; }
 
-
-
-     void FixPosition() override
-     {
-
-         sf::Vector2f topLeft = m_scene->getRoot()->getScene()->GetCenterWindow();
-         sf::Vector2f screenPos(m_x - topLeft.x, m_y - topLeft.y);
-
-         m_shape.setPosition(screenPos);
-     }
 
     void HandleCollision() override
     {
@@ -81,5 +84,6 @@ private:
 	sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;
     sf::Vector2f getLastPosition() {}
+    IShapeSFML* m_game_object;
 
 };

@@ -52,6 +52,7 @@ public:
 	void ProcessInput(const sf::Event& event) override = 0;
 	void Update(const float& deltatime);
 	void Render() override = 0;
+
 protected:
 	IShapeSFML* m_ObjectToProtect;
 };

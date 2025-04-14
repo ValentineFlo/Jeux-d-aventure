@@ -15,6 +15,16 @@ struct AABB
         return !(Amax.x < other.Amin.x || Amin.x > other.Amax.x ||
             Amax.y < other.Amin.y || Amin.y > other.Amax.y);
     }
+
+    float getPosition()
+    {
+        
+    }
+
+    void setPosition(const AABB& aabb)
+    {
+        
+    }
 };
 
 inline float convertRadToDeg(const float& rad) { return (180.0f * rad) / 3.14159f; }
