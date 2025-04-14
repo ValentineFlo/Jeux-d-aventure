@@ -1,6 +1,8 @@
 #pragma once
 #include <stdexcept>
 #include <map>
+#include <fstream>
+#include <memory>
 #include "TextureCache.h"
 
 
@@ -402,10 +404,24 @@ public:
 	{
 		auto it  = m_tileset.find(tile);
 		if(it==m_tileset.end())
-			throw std::out_of_range("The tile is not in the std::map");
+			throw std::out_of_range("The tile is not in the std::map m_tileset");
 		setActiveRegion(it->second);
 		setFramePosition(0, 0);
 		return getCurrentFrameSprite();
+	}
+	const sf::Vector2i& getTileSize(const tile& tile) const
+	{
+		auto it = m_tileset.find(tile);
+		if (it == m_tileset.end())
+			throw std::out_of_range("The tile is not in the std::map m_tileset");
+		return getRegion(it->second).getFrameSize();
+	}
+	const sf::Vector2i& getTileSize(const tile& tile) 
+	{
+		auto it = m_tileset.find(tile);
+		if (it == m_tileset.end())
+			throw std::out_of_range("The tile is not in the std::map m_tileset");
+		return getRegion(it->second).getFrameSize();
 	}
 private:
 	std::map<tile, size_t> m_tileset;
@@ -414,23 +430,99 @@ private:
 class TileMap
 {
 public:
-	TileMap(TextureCache* texture)
-		:
+	TileMap(TileSet* tileset)
+		:m_tileset(tileset)
 	{
 
 	}
 	
-	~TileMap();
-	void setTile(const sf::Vector2i& position, const tile& tile);
-	const tile& getTile(const sf::Vector2i& position) const;
-	tile& getTile(const sf::Vector2i& position);
-	bool hasTile(const sf::Vector2i& position);
-	void removeTile(const sf::Vector2i& position);
+	~TileMap()
+	{
+		delete m_tileset;
+		m_tileset = nullptr;
+	}
+	void setTile(const sf::Vector2i& position, const tile& tile)
+	{
+		m_map[position] = tile;
+	}
+	const tile& getTile(const sf::Vector2i& position) const
+	{
+		auto it = m_map.find(position);
+		if(it==m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		return it->second;
+	}
+	tile& getTile(const sf::Vector2i& position)
+	{
+		auto it = m_map.find(position);
+		if (it == m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		return it->second;
+	}
+	bool hasTile(const sf::Vector2i& position)
+	{
+		return m_map.find(position) != m_map.end();
+	}
+	void removeTile(const sf::Vector2i& position)
+	{
+		auto it = m_map.find(position);
+		if (it == m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		m_map.erase(it);
+	}
 
-	void Render();
-	void SaveToFile(const std::string& filename);
-	void LoadFromFile(const std::string& filename);
+	void Render( sf::RenderWindow& window)
+	{
+		for (auto it = m_map.begin();it != m_map.end();++it)
+		{
+			const sf::Vector2i& gridpos = it->first;
+			const tile& tiletype = it->second;
+
+			sf::Sprite tileSprite = m_tileset->getTileSprite(tiletype);
+			tileSprite.setPosition(static_cast<float>(gridpos.x * m_tileset->getTileSize(tiletype).x),
+								   static_cast<float>(gridpos.y * m_tileset->getTileSize(tiletype).y));
+			window.draw(tileSprite);
+		}
+	}
+	const std::map<sf::Vector2i, tile>& getMap() const
+	{
+		return m_map;
+	}
+	std::map<sf::Vector2i, tile>& getMap() 
+	{
+		return m_map;
+	}
+	/*void SaveToFile(const std::string& filename);
+	void LoadFromFile(const std::string& filename);*/
 private:
 	std::map<sf::Vector2i, tile> m_map;
 	TileSet* m_tileset;
+};
+
+class LevelFactory
+{
+public:
+	
+	static bool SaveLevel(const TileMap& map, const std::string& filename)
+	{
+		const auto& tileMap = map.getMap();
+		for (const auto& [position, tile] : tileMap)
+		{
+
+		}
+		
+		//std::ofstream fichier()
+
+	}
+	static bool LoadLevel(TileMap& map, const std::string& filename)
+	{
+
+	}
+
+private:
+	/*std::unique_ptr<TileMap> m_Tilemap = std::make_unique< TileMap>();
+	void test()
+	{
+		
+	}*/
 };

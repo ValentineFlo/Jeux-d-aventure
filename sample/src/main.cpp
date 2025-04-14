@@ -20,7 +20,7 @@
 #include "SFML/Graphics.hpp"
 #include "Game.h"
 #include "Level_Editor_Scene.h"
-#include <GameObject.h>
+#include "GameObject.h"
 
 //TODO
 int main(int argc, char** argv) 
