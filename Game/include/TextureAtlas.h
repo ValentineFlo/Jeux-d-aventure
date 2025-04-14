@@ -414,8 +414,23 @@ private:
 class TileMap
 {
 public:
-	TileMap();
+	TileMap(TextureCache* texture)
+		:
+	{
+
+	}
 	
 	~TileMap();
+	void setTile(const sf::Vector2i& position, const tile& tile);
+	const tile& getTile(const sf::Vector2i& position) const;
+	tile& getTile(const sf::Vector2i& position);
+	bool hasTile(const sf::Vector2i& position);
+	void removeTile(const sf::Vector2i& position);
+
+	void Render();
+	void SaveToFile(const std::string& filename);
+	void LoadFromFile(const std::string& filename);
 private:
+	std::map<sf::Vector2i, tile> m_map;
+	TileSet* m_tileset;
 };
