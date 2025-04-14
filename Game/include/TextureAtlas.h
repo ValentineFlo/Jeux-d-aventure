@@ -7,7 +7,7 @@
 
 class TextureAtlas
 {
-public:
+protected:
 	struct Region;
 
 	TextureAtlas()
@@ -120,7 +120,7 @@ public:
 	}
 
 
-	//position est en pixels(position du coin supérieur gauche de la région)
+	//position est en pixels(position du coin supï¿½rieur gauche de la rï¿½gion)
 	//regionSize est en nombre de frames(ex: 7 colonnes(x), 6 lignes(y))
 	//frameSize est en pixels(taille de chaque frame)
 	//spacing est en pixels(espace entre les frames)
@@ -223,8 +223,9 @@ public:
 	{
 		return m_Sprite.getScale();
 	}
-
-private:
+	
+		
+protected:
 	size_t m_currentRegionIndex;
 	std::vector<Region> m_RegionList;
 
@@ -234,8 +235,8 @@ private:
 	sf::IntRect m_FrameRect;
 
 	sf::Sprite m_Sprite;
+	
 	TextureCache* m_texture;
-
 	bool m_textureloaded;
 
 	struct Region
@@ -298,62 +299,123 @@ private:
 
 
 using tile = char;
-class TileType
+//class TileType
+//{
+//public:
+//	TileType();
+//	~TileType()
+//	{
+//		delete m_textureatlas;
+//		m_textureatlas = nullptr;
+//	}
+//	const tile& getTileType()const
+//	{
+//		return m_tiletype;
+//	}
+//	tile& getTileType()
+//	{
+//		return m_tiletype;
+//	}
+//	void setTileType(tile tiletype)
+//	{
+//		m_tiletype = tiletype;
+//	}
+//	const bool& isHatHitbox()const
+//	{
+//		return m_hashitbox;
+//	}
+//	void setIsHatHitbox(bool ishathitbox)
+//	{
+//		m_hashitbox = ishathitbox;
+//	}
+//	const sf::Sprite& getSprite()const
+//	{
+//		return m_textureatlas->getCurrentFrameSprite();
+//	}
+//
+//
+//	sf::Sprite& getSprite()
+//	{
+//		return m_textureatlas->getCurrentFrameSprite();
+//	}
+//	void setSprite(const std::string& filename, const sf::Vector2i& position,
+//		           const sf::Vector2i& regionSize,
+//		           const sf::Vector2i& frameSize,
+//		           const sf::Vector2i& spacing = sf::Vector2i(0, 0))
+//	{
+//		m_textureatlas->Load(filename);
+//		m_textureatlas->addRegion(position, regionSize, frameSize, spacing);
+//	}
+//private:
+//	tile m_tiletype;
+//	TextureAtlas* m_textureatlas;
+//	bool m_hashitbox;
+//};
+
+
+//position est en pixels(position du coin supï¿½rieur gauche de la rï¿½gion)
+	//regionSize est en nombre de frames(ex: 7 colonnes(x), 6 lignes(y))
+	//frameSize est en pixels(taille de chaque frame)
+	//spacing est en pixels(espace entre les frames)
+class TileSet : TextureAtlas
 {
 public:
-	TileType();
-	~TileType()
+	TileSet(TextureCache* texture)
+		:TextureAtlas()
 	{
-		delete m_textureatlas;
-		m_textureatlas = nullptr;
-	}
-	const tile& getTileType()const
-	{
-		return m_tiletype;
-	}
-	tile& getTileType()
-	{
-		return m_tiletype;
-	}
-	void setTileType(tile tiletype)
-	{
-		m_tiletype = tiletype;
-	}
-	const bool& isHatHitbox()const
-	{
-		return m_hashitbox;
-	}
-	void setIsHatHitbox(bool ishathitbox)
-	{
-		m_hashitbox = ishathitbox;
-	}
-	const sf::Sprite& getSprite()const
-	{
-		return m_textureatlas->getCurrentFrameSprite();
-	}
+		m_texture = texture;
+		Load("TileSet\\TilesetTest.png");
+		addRegion(sf::Vector2i(0, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));//petit sol rouge r
+		addRegion(sf::Vector2i(8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol rouge R
+		addRegion(sf::Vector2i(8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond cassï¿½ 
+		addRegion(sf::Vector2i(8 + 24+24, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));// petit sol gris foncï¿½
+		addRegion(sf::Vector2i(8 + 24 + 24, 16), sf::Vector2i(1, 1), sf::Vector2i(7, 7));// fond noir
+		addRegion(sf::Vector2i(8 + 24 + 24+8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol gris foncï¿½
+		addRegion(sf::Vector2i(8 + 24 + 24 + 8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond sol gris foncï¿½
+		addRegion(sf::Vector2i(8 + 24 + 24 + 8 + 24+24-1, 8-1), sf::Vector2i(1, 1), sf::Vector2i(25, 9));// tapis roulant
+
+		//addRegion(sf::Vector2i(0, 35), sf::Vector2i(1, 1), sf::Vector2i(7, 13));//petit sol jaune nï¿½1
+		//addRegion(sf::Vector2i(0, 35+13), sf::Vector2i(1, 1), sf::Vector2i(7, 7));//petit sol jaune nï¿½2
+		//addRegion(sf::Vector2i(7, 35), sf::Vector2i(1, 1), sf::Vector2i(7, 13));//gros sol jaune 
 
 
-	sf::Sprite& getSprite()
-	{
-		return m_textureatlas->getCurrentFrameSprite();
+		registerTile('r', 0);//petit sol rouge r
+		registerTile('R', 1);// gros sol rouge 
+		registerTile('C', 2);// fond cassï¿½
+		registerTile('g', 3);// petit sol gris foncï¿½
+		registerTile('N', 4);// fond noir
+		registerTile('G', 5);// gros sol gris foncï¿½
+		registerTile('A', 6);//fond sol gris foncï¿½
+		registerTile('T', 7);// tapis roulant
+
 	}
-	void setSprite(const std::string& filename, const sf::Vector2i& position,
-		           const sf::Vector2i& regionSize,
-		           const sf::Vector2i& frameSize,
-		           const sf::Vector2i& spacing = sf::Vector2i(0, 0))
+	~TileSet()
 	{
-		m_textureatlas->Load(filename);
-		m_textureatlas->addRegion(position, regionSize, frameSize, spacing);
+		delete m_texture;
+		m_texture = nullptr;
+	}
+	void registerTile( const tile& tile, const size_t& idxregionlist)
+	{
+		m_tileset.insert({ tile, idxregionlist });
+	}
+	const sf::Sprite& getTileSprite(const tile& tile) 
+	{
+		auto it  = m_tileset.find(tile);
+		if(it==m_tileset.end())
+			throw std::out_of_range("The tile is not in the std::map");
+		setActiveRegion(it->second);
+		setFramePosition(0, 0);
+		return getCurrentFrameSprite();
 	}
 private:
-	tile m_tiletype;
-	TextureAtlas* m_textureatlas;
-	bool m_hashitbox;
+	std::map<tile, size_t> m_tileset;
 };
+
 class TileMap
 {
 public:
-
+	TileMap();
+	
+	~TileMap();
 private:
-	std::map<sf::Vector2i, tile> m_map;
 };
