@@ -31,7 +31,7 @@ public:
 
     void ProcessInput(const sf::Event& event)
     {
-        std::cout << "process collision" << std::endl;
+        /*std::cout << "process collision" << std::endl;*/
     }
 
     void Render() override
@@ -48,7 +48,7 @@ public:
         if (m_game_object)
         {
             sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos);
+            m_shape.setPosition(basePos.x - m_x, basePos.y - m_y);
         }
     }
 
@@ -63,16 +63,40 @@ public:
 
     void HandleCollision() override
     {
-        AABB boundingBox = getBoundingBox();
+        AABB regionBox = getBoundingBox();
 
-        //for (auto& objet : m_scene->getRoot()->getScene()->getFullTree())
-        //{
-        //    if (Collision(boundingBox, ))
-        //    {
-        //        std::cout << "Collision detected!" << std::endl;
-        //    }
-        //}
+        for (IComponent* comp : m_scene->getRoot()->getFullTree())
+        {
+            IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+            if (!obj || obj == this)
+                continue;
 
+            if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                continue;
+
+            AABB objetBox = obj->GetBoundingBox();
+
+            std::cout << obj->getShape()->getPosition().x << obj->getShape()->getPosition().y << std::endl;
+
+            /*if (regionBox.Intersects(objetBox))
+            {
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+
+                DestructibleObject* objDestru = dynamic_cast<DestructibleObject*>(obj);
+                if (objDestru)
+                {
+                    objDestru->ChangeLife(3);
+                    
+                }
+
+                std::cout << typeid(obj).name()<< " " << typeid(objDestru).name() << std::endl;
+                std::cout << objDestru->getCurrentLife() << std::endl;
+
+                obj->HandleCollision(this);
+
+
+            }*/
+        }
 
     }
     
@@ -80,6 +104,7 @@ public:
     {
         return GameObjectType::NonDestructibleObject;
     }
+
 private:
 	sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;

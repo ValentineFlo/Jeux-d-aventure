@@ -93,6 +93,11 @@ public:
 
     std::string getOrientationString() const;
 
+    sf::Vector2f getLastPosition()
+    {
+        return m_lastPosition;
+    }
+
 
 private:
     IShapeSFML* m_background;
@@ -121,4 +126,5 @@ private:
     Orientation determineOrientation(float angle);
     Orientation m_currentOrientation;
 
+    const sf::Vector2f& m_lastPosition;
 };

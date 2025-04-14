@@ -1,6 +1,7 @@
 #pragma once
 #include "Region.h"
 #include "SceneBase.h"
+#include "Hero.h"
 
 class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
@@ -53,7 +54,7 @@ public:
         if (m_game_object)
         {
             sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos);
+            m_shape.setPosition(basePos.x - m_x, basePos.y - m_y);
         }
     }
 
@@ -84,6 +85,13 @@ public:
             if (regionBox.Intersects(objetBox))
             {
                 std::cout << "Collision avec : " << typeid(*this).name()<< " " << typeid(*obj).name() << std::endl;
+
+                /*Hero* hero = dynamic_cast<Hero*>(obj);
+                if (hero)
+                {
+                    hero->getShape()->setPosition(hero->getLastPosition());
+                }*/
+
                 obj->HandleCollision(this);
 
                 
