@@ -505,21 +505,150 @@ public:
 	
 	static bool SaveLevel(const TileMap& map, const std::string& filename)
 	{
+		std::ofstream file(filename);
+		if (!file)
+			throw std::runtime_error("file cannot be opened to save data");
+
+		int m_minX;
+		int m_minY;
+		int m_maxX;
+		int m_maxY;
+		int m_TileCount;
 		const auto& tileMap = map.getMap();
+		if (tileMap.size() == 0)
+		{
+			m_minX = 0;
+			m_minY = 0;
+			m_maxX = 0;
+			m_maxY = 0;
+			m_TileCount = 0;
+
+			file << "[METADATA]" << "\n";
+			file << "MIN_X = " << m_minX  << "\n";
+			file << "MIN_Y = " << m_minY << "\n";
+			file << "MAX_X = " << m_maxX << "\n";
+			file << "MAX_Y = " << m_maxY << "\n";
+			file << "TILE_COUNT = " << m_TileCount << "\n";
+			file << "\n";
+
+			file << "[TILE_DATA]" << "\n";
+
+			file.flush();
+			return true;
+		}
+		m_minX = std::numeric_limits<int>::max();
+		m_minY = std::numeric_limits<int>::max();
+		m_maxX = std::numeric_limits<int>::min();
+		m_maxY = std::numeric_limits<int>::min();
 		for (const auto& [position, tile] : tileMap)
 		{
+			if (position.x < m_minX)
+				m_minX = position.x;
+			if (position.y < m_minY)
+				m_minY = position.y;
 
+			if (position.x > m_maxX)
+				m_maxX = position.x;
+			if (position.y > m_maxY)
+				m_maxY = position.y;
 		}
-		
-		//std::ofstream fichier()
+		m_TileCount = tileMap.size();
 
+		file << "[METADATA]" << "\n";
+		file << "MIN_X = " << m_minX << "\n";
+		file << "MIN_Y = " << m_minY << "\n";
+		file << "MAX_X = " << m_maxX << "\n";
+		file << "MAX_Y = " << m_maxY << "\n";
+		file << "TILE_COUNT = " << m_TileCount << "\n";
+		file << "\n";
+
+		file << "[TILE_DATA]" << "\n";
+		for (const auto& [position, tile] : tileMap)
+			file << "{" << position.x << "," << position.y << "}" << "  " << tile << "\n";
+
+		file.flush();
+		return true;
 	}
 	static bool LoadLevel(TileMap& map, const std::string& filename)
 	{
+		std::ifstream file(filename);
+		if (!file)
+			throw std::runtime_error("file cannot be opened to load data");
 
+		int m_minX;
+		int m_minY;
+		int m_maxX;
+		int m_maxY;
+		int m_TileCount;
+		auto& tileMap = map.getMap();
+		std::string line;
+		bool inMetadataSection = false;
+		bool inTileDataSection = false;
+
+		while (std::getline(file, line))
+		{
+			if (line == "[METADATA]")
+			{
+				inMetadataSection = true;
+				inTileDataSection = false;
+				continue;
+			}
+			if (line == "[TILE_DATA]")
+			{
+				inMetadataSection = false;
+				inTileDataSection = true;
+				continue;
+			}
+			if (inMetadataSection == true && !line.empty())
+			{
+				auto it = line.find('=');
+				std::string key = line.substr(0, it - 1);
+				std::string value = line.substr(it + 1);
+				switch (key)
+				{
+				case"MIN_X":
+					m_minX = std::stoi(value);
+					break;
+				case"MIN_Y":
+					m_minY = std::stoi(value);
+					break;
+				case"MAX_X":
+					m_maxX = std::stoi(value);
+					break;
+				case"MAX_Y":
+					m_maxY = std::stoi(value);
+					break;
+				case"TILE_COUNT":
+					m_TileCount = std::stoi(value);
+					break;
+				default:
+					throw std::runtime_error("");
+					break;
+				}
+				if (key == "MIN_X")
+					m_minX = std::stoi(value);
+				if (key == "MIN_Y")
+					m_minY = std::stoi(value);
+				if (key == "MAX_X")
+					m_maxX = std::stoi(value);
+				if (key == "MAX_Y")
+					m_maxY = std::stoi(value);
+				if (key == "TILE_COUNT")
+					m_TileCount = std::stoi(value);
+			}
+			if (inTileDataSection == true && !line.empty())
+			{
+
+			}
+		}
+
+		/*for (auto& [position, tile] : tileMap)
+		{
+		}*/
 	}
 
 private:
+	
 	/*std::unique_ptr<TileMap> m_Tilemap = std::make_unique< TileMap>();
 	void test()
 	{
