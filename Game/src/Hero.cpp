@@ -32,9 +32,7 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
     }
 
     if (ship->m_strafe[trust::Left]
-        || ship->m_strafe[trust::Right]
-        || ship->m_strafe[trust::Up]
-        || ship->m_strafe[trust::Down])
+        || ship->m_strafe[trust::Right])
     {
         ship->ChangeState(State::MOVE);
         return;
@@ -85,9 +83,7 @@ void Hero::MoveState::update(Hero* ship, float deltaTime)
     }
 
     if (!ship->m_strafe[trust::Left]
-        && !ship->m_strafe[trust::Right]
-        && !ship->m_strafe[trust::Up]
-        && !ship->m_strafe[trust::Down])
+        && !ship->m_strafe[trust::Right])
     {
         ship->ChangeState(State::IDLE);
         return;
@@ -159,8 +155,7 @@ void Hero::HandAttackState::update(Hero* ship, float deltaTime)
 
         attackTimer = 0.0f;
 
-        if (ship->m_strafe[trust::Left] || ship->m_strafe[trust::Right] ||
-            ship->m_strafe[trust::Up] || ship->m_strafe[trust::Down])
+        if (ship->m_strafe[trust::Left] || ship->m_strafe[trust::Right])
         {
             ship->ChangeState(State::MOVE);
         }
@@ -170,8 +165,7 @@ void Hero::HandAttackState::update(Hero* ship, float deltaTime)
         }
     }
 
-    if (ship->m_strafe[trust::Left] || ship->m_strafe[trust::Right] ||
-        ship->m_strafe[trust::Up] || ship->m_strafe[trust::Down])
+    if (ship->m_strafe[trust::Left] || ship->m_strafe[trust::Right])
     {
         static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
             ship->m_strafe,
@@ -225,9 +219,7 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
     if (ship->m_animationComponent->isAnimationFinished())
     {
         if (ship->m_strafe[trust::Left]
-            || ship->m_strafe[trust::Right]
-            || ship->m_strafe[trust::Up]
-            || ship->m_strafe[trust::Down])
+            || ship->m_strafe[trust::Right])
         {
             ship->ChangeState(State::MOVE);
         }
@@ -242,9 +234,7 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
     }
 
     if (ship->m_strafe[trust::Left]
-        || ship->m_strafe[trust::Right]
-        || ship->m_strafe[trust::Up]
-        || ship->m_strafe[trust::Down])
+        || ship->m_strafe[trust::Right])
     {
         static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
             ship->m_strafe,
