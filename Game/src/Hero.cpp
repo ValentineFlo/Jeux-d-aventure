@@ -3,6 +3,9 @@
 #include "Animation.h"
 #include <iostream>
 
+#include "Region.h"
+#include "RegionCollision.h"
+
 //=========== IDLE STATE ===========//
 Hero::IState* Hero::IdleState::handle(const State& state)
 {
@@ -39,6 +42,11 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
         ship->ChangeState(State::MOVE);
         return;
     }
+
+    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
+        ship->m_strafe,
+        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
+    );
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && ship->m_meleeAttackTimer.ActionIsReady())
     {
@@ -237,16 +245,12 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
         }
     }
 
-    if (ship->m_strafe[trust::Left]
-        || ship->m_strafe[trust::Right]
-        || ship->m_strafe[trust::Up]
-        || ship->m_strafe[trust::Down])
-    {
+
         static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
             ship->m_strafe,
             ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
         );
-    }
+    
 }
 
 //=========== RELOAD STATE ===========//
@@ -286,7 +290,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
     , m_angle(0)
     , m_elapsedTime(0.2)
     , m_animate({ "Hero.png" })
-    , m_physics(new Physics(500))
+    , m_physics(new Physics(650.f,3000.f,10.f))
     , m_invisibility(2.5)
     , m_detectionRadius(30.0f)
     , m_meleeDamage(0.01f)
@@ -298,7 +302,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
 
     m_shape = new SquareSFML(32, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
-
+    
     m_animationComponent = new AnimationComponent(this);
     setupAnimations();
 
@@ -413,7 +417,7 @@ void Hero::physics()
 
 void Hero::Update(const float& deltatime)
 {
-    m_lastPosition == m_shape->getPosition();
+    
 
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
@@ -451,13 +455,19 @@ void Hero::Update(const float& deltatime)
             }
         }
     }
-
+    
     m_currentState->update(this, deltatime);
 
     m_shape->setRotation(0);
 
+    
+
+    static_cast<Physics*>(m_physics)->on_ground = false;
+
     m_background->setPosition(static_cast<Physics*>(m_physics)->calculPosition(
         m_background, m_scene->getRoot()->getScene(), m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()));
+
+    
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 
@@ -510,8 +520,10 @@ float Hero::anglecalcul()
 
 void Hero::HandleCollision(IGameObject* object)
 {
+
     if (object->globalGameObjectType() != GameObjectType::DestructibleObject)
         return;
+
 
     AABB myBox = this->getShape()->GetBoundingBox();
     

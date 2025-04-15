@@ -462,22 +462,51 @@ void Cursor::Render()
 	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<SquareSFML*>(m_shape)->getShape());
 }
 
-Physics::Physics(const float& maxVelocity)
-	: m_maxVelocity(maxVelocity), movementDirection{ 0, 0, 0, 0 } {
+Physics::Physics(const float& maxVelocity, const float& thrust, const float& frictionCoef)
+	: m_maxVelocity(maxVelocity)
+	,m_thrust(thrust)
+	,m_frictionCoef(frictionCoef)
+	,m_velocity{0.f,0.f}
+{
 }
 
 void Physics::ExecutePhysics(KT::VectorND<bool, 4>& isStrafing, float framerate)
 {
-	movementDirection[trust::Right] = isStrafing[trust::Left] ? m_maxVelocity : 0;
-	movementDirection[trust::Left] = isStrafing[trust::Right] ? -m_maxVelocity : 0;
-	movementDirection[trust::Up] = isStrafing[trust::Down] ? -m_maxVelocity : 0;
-	movementDirection[trust::Down] = isStrafing[trust::Up] ? m_maxVelocity : 0;
+	sf::Vector2f acceleration = { 0.f,0.f };
+
+
+	/*if (!isStrafing[trust::Left] && !isStrafing[trust::Right]  )*/
+		acceleration = -getFrictionCoef() * m_velocity;
+	if (isStrafing[trust::Left])
+		acceleration += getThrust() * sf::Vector2f { std::cos(0.f), 0 };
+	if (isStrafing[trust::Right])
+		acceleration -= getThrust() * sf::Vector2f { std::cos(0.f), 0 };
+
+	if (isStrafing[trust::Up] && on_ground)
+	{
+		acceleration += 1000000.f * sf::Vector2f { std::cos(3.14159f/2.f), std::sin(3.14159f / 2.f) };
+		on_ground = false;
+	}
+	
+	if (on_ground == false)
+		acceleration -= getThrust() * sf::Vector2f{ std::cos(3.14159f / 2.f), std::sin(3.14159f / 2.f) };
+	
+	
+	
+	
+
+	m_velocity += acceleration * framerate;
+
+	float Length = std::sqrt(m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y);
+
+	if (Length > getMaxVelocity() && !isStrafing[trust::Up])
+		m_velocity = m_velocity * (getMaxVelocity() / Length);
 }
 
 sf::Vector2f Physics::calculPosition(IShapeSFML* entity, ISceneBase* scene, float framerate)
 {
-	float x = movementDirection[trust::Left] + movementDirection[trust::Right];
-	float y = movementDirection[trust::Up] + movementDirection[trust::Down];
+	float x = m_velocity.x;
+	float y = m_velocity.y;
 
 	sf::Vector2f newPosition = {
 		entity->getPosition().x + (x * scene->getRefreshTime().asSeconds()),

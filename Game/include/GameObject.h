@@ -32,15 +32,20 @@ private:
 class Physics : public IPhysics
 {
 public:
-	Physics(const float& maxVelocity);
+	Physics(const float& maxVelocity, const float& thrust, const float& frictionCoef);
 	void ExecutePhysics(KT::VectorND<bool, 4>& isStrafing, float framerate);
 
 	sf::Vector2f calculPosition(IShapeSFML* entity, ISceneBase* scene, float framerate);
 	float getMaxVelocity() { return m_maxVelocity; }
-
+	float getFrictionCoef() { return m_frictionCoef; }
+	float getThrust() { return m_thrust; }
+	bool on_ground=false;
 private:
 	float m_maxVelocity;
-	std::array<float, 4> movementDirection;
+	float m_frictionCoef;
+	float m_thrust;
+	sf::Vector2f m_velocity;
+	//std::array<float, 4> movementDirection;
 };
 
 

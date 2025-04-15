@@ -36,7 +36,7 @@ public:
     {
         m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, game_object, scene));
     }
-    
+
 
 private:
     std::vector<std::unique_ptr<IRegion>> m_regions;

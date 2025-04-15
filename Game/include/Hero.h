@@ -98,7 +98,7 @@ public:
         return m_lastPosition;
     }
 
-
+    IPhysics* m_physics;
 private:
     IShapeSFML* m_background;
     IShapeSFML* m_target;
@@ -109,10 +109,9 @@ private:
     Timer m_meleeAttackTimer;
 
     AnimateSprite m_animate;
-
     AnimationComponent* m_animationComponent;
-
-    IPhysics* m_physics;
+    
+    
     ITurret* m_turret;
     KT::VectorND<bool, 4> m_strafe{ false,false,false,false };
 
@@ -127,4 +126,8 @@ private:
     Orientation m_currentOrientation;
 
     const sf::Vector2f& m_lastPosition;
+
+
+    float PlateformeXmin=0.f;
+    float PlateformeXmax=0.f;
 };

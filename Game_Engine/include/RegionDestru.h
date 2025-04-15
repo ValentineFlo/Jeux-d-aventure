@@ -78,7 +78,7 @@ public:
 
             std::cout << obj->getShape()->getPosition().x << obj->getShape()->getPosition().y << std::endl;
 
-            /*if (regionBox.Intersects(objetBox))
+            if (regionBox.Intersects(objetBox))
             {
                 std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
 
@@ -95,7 +95,7 @@ public:
                 obj->HandleCollision(this);
 
 
-            }*/
+            }
         }
 
     }

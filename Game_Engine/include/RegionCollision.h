@@ -54,7 +54,7 @@ public:
         if (m_game_object)
         {
             sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos.x - m_x, basePos.y - m_y);
+            m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
         }
     }
 
@@ -74,7 +74,7 @@ public:
         for (IComponent* comp : m_scene->getRoot()->getFullTree())
         {
             IGameObject* obj = dynamic_cast<IGameObject*>(comp);
-            if (!obj || obj == this) 
+            if (!obj || obj == this)
                 continue;
 
             if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
@@ -82,22 +82,30 @@ public:
 
             AABB objetBox = obj->GetBoundingBox();
 
+            
             if (regionBox.Intersects(objetBox))
             {
-                std::cout << "Collision avec : " << typeid(*this).name()<< " " << typeid(*obj).name() << std::endl;
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
 
-                /*Hero* hero = dynamic_cast<Hero*>(obj);
-                if (hero)
+                if (std::string(typeid(*obj).name()) == "class Hero")
                 {
-                    hero->getShape()->setPosition(hero->getLastPosition());
-                }*/
+                    Hero* hero = static_cast<Hero*>(obj);
+                    static_cast<Physics*>(hero->m_physics)->on_ground = true;
+                    /*hero->getShape()->setPosition(hero->getLastPosition());*/
 
+                }
                 obj->HandleCollision(this);
+                
+
+               
 
                 
             }
+
+            
+            
         }
-       
+        
     }
 
 

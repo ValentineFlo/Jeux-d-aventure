@@ -39,9 +39,11 @@ public:
 	void setWidth(float width) { m_width = width; }
 	void setHeight(float height) { m_height = height; }
 
+    
 protected:
     float m_x, m_y;
     float m_width, m_height;
+    
 
 };
 
