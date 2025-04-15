@@ -9,11 +9,13 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	m_bossSpawnTimer(10.0f)
 
 {
+
 	m_Background = new SquareSFML(10000, sf::Vector2f(0, 0));
 	m_Background->setTexture(m_texture->getTexture("Map.png"));
 	m_hero = new Hero(this, m_Background);
-	m_regionManager.addRegion(COLLISIONABLE, 850.0f, 500.0f, 900.0f, 50.0f, m_Background, this);
-	m_regionManager.addRegion(DESTRUCTEUR, 10.0f, 130.0f, 900.0f, 900.0f, m_Background, this);
+	m_regionManager.addRegion(COLLISIONABLE, 800.0f, -700.0f, 2000.0f, 25.0f, m_Background, this);
+	m_regionManager.addRegion(COLLISIONABLE, 800.0f, -300.0f, 500.0f, 25.0f, m_Background, this);
+	//m_regionManager.addRegion(DESTRUCTEUR, 10.0f, 130.0f, 2000.0f, 2000.0f, m_Background, this);
 
 	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);

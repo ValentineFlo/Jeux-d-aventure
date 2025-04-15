@@ -78,9 +78,13 @@ public:
 
             std::cout << obj->getShape()->getPosition().x << obj->getShape()->getPosition().y << std::endl;
 
-            /*if (regionBox.Intersects(objetBox))
+            if (regionBox.Intersects(objetBox))
             {
                 std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+                
+
+                std::cout << getBoundingBox().Amin.x << " " << getBoundingBox().Amin.x << std::endl;
+
 
                 DestructibleObject* objDestru = dynamic_cast<DestructibleObject*>(obj);
                 if (objDestru)
@@ -95,7 +99,7 @@ public:
                 obj->HandleCollision(this);
 
 
-            }*/
+            }
         }
 
     }

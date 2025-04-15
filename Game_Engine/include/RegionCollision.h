@@ -54,7 +54,7 @@ public:
         if (m_game_object)
         {
             sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos.x - m_x, basePos.y - m_y);
+            m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
         }
     }
 
@@ -86,11 +86,11 @@ public:
             {
                 std::cout << "Collision avec : " << typeid(*this).name()<< " " << typeid(*obj).name() << std::endl;
 
-                /*Hero* hero = dynamic_cast<Hero*>(obj);
-                if (hero)
+                if (std::string (typeid(*obj).name()) == "class Hero")
                 {
-                    hero->getShape()->setPosition(hero->getLastPosition());
-                }*/
+                    Hero* hero = static_cast<Hero*>(obj);
+                    /*hero->getShape()->setPosition(hero->getLastPosition());*/
+                }
 
                 obj->HandleCollision(this);
 

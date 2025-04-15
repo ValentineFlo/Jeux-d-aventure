@@ -44,12 +44,16 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
     {
         ship->ChangeState(State::HAND_ATTACK);
         ship->m_meleeAttackTimer.resetTimer();
+        return;
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
         ship->ChangeState(State::PISTOL_ATTACK);
+        return;
     }
+
+
 }
 
 //=========== MOVE STATE ===========//
@@ -293,9 +297,7 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
     , m_meleeAttackCooldown(0.5f)
     , m_meleeAttackTimer(2.0f)
     , m_currentOrientation(Orientation::DOWN)
-    , m_lastPosition(sf::Vector2f(0.0f,0.0f))
 {
-
     m_shape = new SquareSFML(32, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 
@@ -331,6 +333,8 @@ void Hero::setupAnimations()
     const int IDLE_FRAMES = 6;
     const int MOVE_FRAMES = 5;
     const int ATTACK_FRAMES = 6;
+
+
 
     Animation idleAnimDown("Hero.png", IDLE_FRAMES, 100.f);
     idleAnimDown.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
@@ -413,7 +417,6 @@ void Hero::physics()
 
 void Hero::Update(const float& deltatime)
 {
-    m_lastPosition == m_shape->getPosition();
 
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
