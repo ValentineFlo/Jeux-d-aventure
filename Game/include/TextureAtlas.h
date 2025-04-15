@@ -426,7 +426,13 @@ public:
 private:
 	std::map<tile, size_t> m_tileset;
 };
-
+namespace sf
+{
+	bool operator<(const sf::Vector2i& left, const sf::Vector2i& right)
+	{
+		return (left.x < right.x) || (left.x == right.x && left.y < right.y);
+	}
+}
 class TileMap
 {
 public:
@@ -552,7 +558,7 @@ public:
 			if (position.y > m_maxY)
 				m_maxY = position.y;
 		}
-		m_TileCount = tileMap.size();
+		m_TileCount = static_cast<int>(tileMap.size());
 
 		file << "[METADATA]" << "\n";
 		file << "MIN_X = " << m_minX << "\n";
@@ -569,6 +575,7 @@ public:
 		file.flush();
 		return true;
 	}
+
 	static bool LoadLevel(TileMap& map, const std::string& filename)
 	{
 		std::ifstream file(filename);
@@ -580,10 +587,17 @@ public:
 		int m_maxX;
 		int m_maxY;
 		int m_TileCount;
-		auto& tileMap = map.getMap();
+		int Tilecounter = 0;
 		std::string line;
+		std::map< std::string, int&> m_metadata;
+		m_metadata["MIN_X"] = m_minX;
+		m_metadata["MIN_Y"] = m_minY;
+		m_metadata["MAX_X"] = m_maxX;
+		m_metadata["MAX_Y"] = m_maxY;
+		m_metadata["TILE_COUNT"] = m_TileCount;
 		bool inMetadataSection = false;
 		bool inTileDataSection = false;
+		map.getMap().clear();
 
 		while (std::getline(file, line))
 		{
@@ -601,50 +615,38 @@ public:
 			}
 			if (inMetadataSection == true && !line.empty())
 			{
-				auto it = line.find('=');
-				std::string key = line.substr(0, it - 1);
-				std::string value = line.substr(it + 1);
-				switch (key)
-				{
-				case"MIN_X":
-					m_minX = std::stoi(value);
-					break;
-				case"MIN_Y":
-					m_minY = std::stoi(value);
-					break;
-				case"MAX_X":
-					m_maxX = std::stoi(value);
-					break;
-				case"MAX_Y":
-					m_maxY = std::stoi(value);
-					break;
-				case"TILE_COUNT":
-					m_TileCount = std::stoi(value);
-					break;
-				default:
-					throw std::runtime_error("");
-					break;
-				}
-				if (key == "MIN_X")
-					m_minX = std::stoi(value);
-				if (key == "MIN_Y")
-					m_minY = std::stoi(value);
-				if (key == "MAX_X")
-					m_maxX = std::stoi(value);
-				if (key == "MAX_Y")
-					m_maxY = std::stoi(value);
-				if (key == "TILE_COUNT")
-					m_TileCount = std::stoi(value);
+				auto equal = line.find('=');
+				std::string key = line.substr(0, equal - 1);
+				std::string value = line.substr(equal + 1);
+
+				auto mapit = m_metadata.find(key);
+				if (mapit != m_metadata.end())
+					mapit->second = std::stoi(value);
+				else
+					throw std::runtime_error("Unknown metadata key: " + key);
 			}
 			if (inTileDataSection == true && !line.empty())
 			{
+				auto braceopen = line.find('{');
+				auto braceclose = line.find('}');
+				auto comma = line.find(',');
 
+				auto x = std::stoi(line.substr(braceopen + 1, comma - braceopen - 1));
+				auto y = std::stoi(line.substr(comma + 1, braceclose - comma - 1));
+				auto tilepos = line.find_first_not_of(" ", braceclose + 1);
+				char tiletype = line[tilepos];
+				if (x >= m_minX && x <= m_maxX && y >= m_minY && y <= m_maxY)
+				{
+					map.setTile({ x,y }, (tiletype));
+					Tilecounter++;
+				}
+				else
+					throw std::out_of_range("Tile coordinates out of declared bounds");
 			}
 		}
-
-		/*for (auto& [position, tile] : tileMap)
-		{
-		}*/
+		if (Tilecounter != m_TileCount)
+			throw std::runtime_error("There is a discrepancy between the number of tiles announced and the number of tiles counted. m_TileCount = " + std::to_string(m_TileCount) + " Tilecounter = " + std::to_string(Tilecounter));
+		return true;
 	}
 
 private:
