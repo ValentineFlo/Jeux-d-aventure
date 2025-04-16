@@ -589,12 +589,12 @@ public:
 		int m_TileCount;
 		int Tilecounter = 0;
 		std::string line;
-		std::map< std::string, int&> m_metadata;
-		m_metadata["MIN_X"] = m_minX;
-		m_metadata["MIN_Y"] = m_minY;
-		m_metadata["MAX_X"] = m_maxX;
-		m_metadata["MAX_Y"] = m_maxY;
-		m_metadata["TILE_COUNT"] = m_TileCount;
+		std::map< std::string, int*> m_metadata;
+		m_metadata["MIN_X"] = &m_minX;
+		m_metadata["MIN_Y"] = &m_minY;
+		m_metadata["MAX_X"] = &m_maxX;
+		m_metadata["MAX_Y"] = &m_maxY;
+		m_metadata["TILE_COUNT"] = &m_TileCount;
 		bool inMetadataSection = false;
 		bool inTileDataSection = false;
 		map.getMap().clear();
@@ -621,7 +621,7 @@ public:
 
 				auto mapit = m_metadata.find(key);
 				if (mapit != m_metadata.end())
-					mapit->second = std::stoi(value);
+					*(mapit->second) = std::stoi(value);
 				else
 					throw std::runtime_error("Unknown metadata key: " + key);
 			}
@@ -644,16 +644,9 @@ public:
 					throw std::out_of_range("Tile coordinates out of declared bounds");
 			}
 		}
-		if (Tilecounter != m_TileCount)
+		if (Tilecounter != *m_metadata["TILE_COUNT"])
 			throw std::runtime_error("There is a discrepancy between the number of tiles announced and the number of tiles counted. m_TileCount = " + std::to_string(m_TileCount) + " Tilecounter = " + std::to_string(Tilecounter));
 		return true;
 	}
 
-private:
-	
-	/*std::unique_ptr<TileMap> m_Tilemap = std::make_unique< TileMap>();
-	void test()
-	{
-		
-	}*/
 };
