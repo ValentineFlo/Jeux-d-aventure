@@ -20,6 +20,8 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	m_regionManager.addRegion(COLLISIONABLE, 2900.0f, -1700.0f, 2000.0f, 25.0f, m_Background, this);
 	m_regionManager.addRegion(COLLISIONABLE, 800.0f, -2500.0f, 500.0f, 25.0f, m_Background, this);
 
+	m_regionManager.addRegion(PLATEFORME, 500.0f, -1650.0f, 80.0f, 90.0f, m_Background, this);
+
 	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);
 	new GameBorder(this, m_Background, Position::Up, 5);
