@@ -4,6 +4,8 @@
 #include <fstream>
 #include <memory>
 #include "TextureCache.h"
+#include "Region.h"
+#include "RegionManager.h"
 
 
 
@@ -217,6 +219,10 @@ protected:
 	{
 		m_Sprite.setScale(factor, factor);
 	}
+	/*void HorizontalMirror(float x, float y)
+	{
+		setScale(-x, y);
+	}*/
 	void setScale(const sf::Vector2f& factors)
 	{
 		m_Sprite.setScale(factors);
@@ -384,30 +390,30 @@ public:
 
 		setScale(m_factor);
 
-		registerTile('r', 0);//petit sol rouge r
-		registerTile('R', 1);// gros sol rouge 
-		registerTile('C', 2);// fond casser
-		registerTile('g', 3);// petit sol gris foncer
-		registerTile('N', 4);// fond noir
-		registerTile('G', 5);// gros sol gris foncer
-		registerTile('A', 6);//fond sol gris foncer
-		registerTile('T', 7);// tapis roulant
+		registerTile('r', 0,COLLISIONABLE);//petit sol rouge r
+		registerTile('R', 1, COLLISIONABLE);// gros sol rouge 
+		registerTile('C', 2, NONE);// fond casser
+		registerTile('g', 3, COLLISIONABLE);// petit sol gris foncer
+		registerTile('N', 4, NONE);// fond noir
+		registerTile('G', 5,COLLISIONABLE);// gros sol gris foncer
+		registerTile('A', 6,NONE);//fond sol gris foncer
+		registerTile('T', 7,COLLISIONABLE);// tapis roulant
 
 	}
 	~TileSet()
 	{
 		
 	}
-	void registerTile( const tile& tile, const size_t& idxregionlist)
+	void registerTile( const tile& tile, const size_t& idxregionlist, const RegionType& regiontype)
 	{
-		m_tileset.insert({ tile, idxregionlist });
+		m_tileset.insert({ tile, std::make_pair(idxregionlist,regiontype)});
 	}
 	const sf::Sprite& getTileSprite(const tile& tile) 
 	{
-		auto it  = m_tileset.find(tile);
-		if(it==m_tileset.end())
+		auto it = m_tileset.find(tile);
+		if(it == m_tileset.end())
 			throw std::out_of_range("The tile is not in the std::map m_tileset");
-		setActiveRegion(it->second);
+		setActiveRegion(it->second.first);
 		setFramePosition(0, 0);
 		return getCurrentFrameSprite();
 	}
@@ -416,23 +422,41 @@ public:
 		auto it = m_tileset.find(tile);
 		if (it == m_tileset.end())
 			throw std::out_of_range("The tile is not in the std::map m_tileset");
-		return getRegion(it->second).getFrameSize();
+		return getRegion(it->second.first).getFrameSize();
 	}
 	const sf::Vector2i& getTileSize(const tile& tile) 
 	{
 		auto it = m_tileset.find(tile);
 		if (it == m_tileset.end())
 			throw std::out_of_range("The tile is not in the std::map m_tileset");
-		return getRegion(it->second).getFrameSize();
+		return getRegion(it->second.first).getFrameSize();
 	}
 	const float& getFactor()const
 	{
 		return m_factor;
 	}
+	const RegionType& getRegionType(const tile& tile) const
+	{
+		auto it = m_tileset.find(tile);
+		if (it == m_tileset.end())
+			throw std::out_of_range("The tile is not in the std::map m_tileset");
+		return it->second.second;
+	}
+	const RegionType& getRegionType(const tile& tile) 
+	{
+		auto it = m_tileset.find(tile);
+		if (it == m_tileset.end())
+			throw std::out_of_range("The tile is not in the std::map m_tileset");
+		return it->second.second;
+	}
 private:
-	std::map<tile, size_t> m_tileset;
+	
+	std::map<tile, std::pair< size_t, RegionType>> m_tileset;
 	float m_factor;
 };
+
+
+
 namespace sf
 {
 	bool operator<(const sf::Vector2i& left, const sf::Vector2i& right)
@@ -440,13 +464,15 @@ namespace sf
 		return (left.x < right.x) || (left.x == right.x && left.y < right.y);
 	}
 }
-class TileMap
+class TileMap:public IComposite
 {
 public:
 	TileMap(TextureCache* texture)
-		:m_mapmodified(false)
+		:IComposite(nullptr)
+		,m_mapmodified(false)
 	{
 		m_tileset = new TileSet(texture);
+		m_regionmanager = new RegionManager();
 		m_BASE_CELL_SIZE = sf::Vector2i(8 * m_tileset->getFactor(), 8 * m_tileset->getFactor());
 	}
 	
@@ -454,11 +480,17 @@ public:
 	{
 		delete m_tileset;
 		m_tileset = nullptr;
+		delete m_regionmanager;
+		m_regionmanager = nullptr;
 	}
 	//Problème de position
 	sf::Vector2i ConvertPixeltoCase(const sf::Vector2i& position)
 	{
 		return sf::Vector2i(static_cast<int>(position.x / getBASE_CELL_SIZE().x), static_cast<int>(position.y / getBASE_CELL_SIZE().y));
+	}
+	sf::Vector2i ConvertCasetoPixel(const sf::Vector2i& position)
+	{
+		return sf::Vector2i(ConvertPixeltoCase(position).x * getBASE_CELL_SIZE().x, ConvertPixeltoCase(position).y * getBASE_CELL_SIZE().y);
 	}
 	//Problème de position
 	void CreateEmpty(const unsigned int& x,  const unsigned int& y)
@@ -478,7 +510,20 @@ public:
 	}
 	void setTile(const sf::Vector2i& position, const tile& tile)
 	{
-		m_map[position] = tile;
+		if(m_tileset->getRegionType(tile)!= NONE)
+		{
+			
+			auto Newregion = m_regionmanager->createRegion(m_tileset->getRegionType(tile),
+										static_cast<float>(ConvertCasetoPixel(position).x),
+										static_cast<float>(ConvertCasetoPixel(position).y),
+										static_cast<float>(m_tileset->getTileSize(tile).x*m_tileset->getFactor()),
+										static_cast<float>(m_tileset->getTileSize(tile).y * m_tileset->getFactor()), this);
+
+			m_map[position] = std::make_pair(tile, std::move(Newregion));
+		}
+		else
+			m_map[position] = std::make_pair(tile, nullptr);
+		
 		setMapModified(true);
 	}
 	const tile& getTile(const sf::Vector2i& position) const
@@ -486,14 +531,14 @@ public:
 		auto it = m_map.find(position);
 		if(it==m_map.end())
 			throw std::out_of_range("The position is not in the std::map m_map");
-		return it->second;
+		return it->second.first;
 	}
 	tile& getTile(const sf::Vector2i& position)
 	{
 		auto it = m_map.find(position);
 		if (it == m_map.end())
 			throw std::out_of_range("The position is not in the std::map m_map");
-		return it->second;
+		return it->second.first;
 	}
 	bool hasTile(const sf::Vector2i& position)
 	{
@@ -513,7 +558,7 @@ public:
 		for (auto it = m_map.begin();it != m_map.end();++it)
 		{
 			const sf::Vector2i& gridpos = it->first;
-			const tile& tiletype = it->second;
+			const tile& tiletype = it->second.first;
 
 			sf::Sprite tileSprite = m_tileset->getTileSprite(tiletype);
 			tileSprite.setPosition(static_cast<float>(gridpos.x * getBASE_CELL_SIZE().x),
@@ -521,11 +566,11 @@ public:
 			window.draw(tileSprite);
 		}
 	}
-	const std::map<sf::Vector2i, tile>& getMap() const
+	const std::map<sf::Vector2i, std::pair< tile, std::unique_ptr<IRegion>>>& getMap() const
 	{
 		return m_map;
 	}
-	std::map<sf::Vector2i, tile>& getMap() 
+	std::map<sf::Vector2i, std::pair< tile, std::unique_ptr<IRegion>>>& getMap()
 	{
 		return m_map;
 	}
@@ -545,12 +590,35 @@ public:
 	{
 		setMapModified(false);
 	}
-	int renderCount = 0;
+	bool hasRegion(const sf::Vector2i& position) const
+	{
+		auto it = m_map.find(position);
+		if(it == m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		return it->second.second != nullptr;
+	}
+	const std::unique_ptr<IRegion>& getRegion(const sf::Vector2i& position) const
+	{
+		auto it = m_map.find(position);
+		if (it == m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		return it->second.second;
+	}
+	const std::unique_ptr<IRegion>& getRegion(const sf::Vector2i& position) 
+	{
+		auto it = m_map.find(position);
+		if (it == m_map.end())
+			throw std::out_of_range("The position is not in the std::map m_map");
+		return it->second.second;
+	}
+
 private:
-	std::map<sf::Vector2i, tile> m_map;
+	
+	std::map<sf::Vector2i, std::pair< tile, std::unique_ptr<IRegion>>> m_map;
 	TileSet* m_tileset;
 	sf::Vector2i m_BASE_CELL_SIZE;
 	bool m_mapmodified;
+	RegionManager* m_regionmanager;
 };
 
 class LevelFactory

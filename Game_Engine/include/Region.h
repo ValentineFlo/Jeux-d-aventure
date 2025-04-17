@@ -5,7 +5,8 @@
 
 enum RegionType
 {
-    COLLISIONABLE
+      NONE
+    , COLLISIONABLE
     , DESTRUCTEUR
     , RESUCITEUR
     , PLATEFORME
