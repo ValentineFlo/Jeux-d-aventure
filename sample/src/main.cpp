@@ -25,6 +25,6 @@
 int main(int argc, char** argv) 
 {
     SceneManager a(argv[0], 1920, 1080, "CyberpunkShooter"/*,sf::Style::Fullscreen*/);
-    a.AddScene(new Game(a.getWindow(), 60, a.getTextureCache()));
+    a.AddScene(new Game(a.getWindow(), 60.f, a.getTextureCache()));
     a.Exe();
 }

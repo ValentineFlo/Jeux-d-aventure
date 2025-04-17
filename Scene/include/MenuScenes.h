@@ -106,7 +106,8 @@ private:
     sf::Sprite m_quitGameSprite;
 
 
-    sf::RectangleShape m_backgroundShape;
+    sf::RectangleShape 
+        Shape;
 
     SceneManager* m_sceneManager;
 
