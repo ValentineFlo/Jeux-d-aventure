@@ -10,6 +10,8 @@ protected:
     {
         IDLE,
         MOVE,
+        JUMP,
+        FALL,
         HAND_ATTACK,
         PISTOL_ATTACK,
         RELOAD
@@ -32,6 +34,20 @@ protected:
     struct MoveState : IState
     {
         ~MoveState() override = default;
+        IState* handle(const State& state) override;
+        void update(Hero* ship, float deltaTime) override;
+    };
+
+    struct JumpState : IState
+    {
+        ~JumpState() override = default;
+        IState* handle(const State& state) override;
+        void update(Hero* ship, float deltaTime) override;
+    };
+
+    struct FallState : IState
+    {
+        ~FallState() override = default;
         IState* handle(const State& state) override;
         void update(Hero* ship, float deltaTime) override;
     };
@@ -71,7 +87,7 @@ protected:
 
 public:
     friend BorderShip;
-    Hero(IComposite* scene, IShapeSFML* background);
+    Hero(IComposite* scene, sf::Vector2f BasePosition);
     ~Hero() override;
 
     void ProcessInput(const sf::Event& event) override;
@@ -82,6 +98,7 @@ public:
     float anglecalcul();
     void HandleCollision(IGameObject* object) override;
     void ChangeLife(const float& life) override;
+    void ChangeLifewithoutinvincibility(const float& life);
 
     void ChangeState(const State& newState);
     float distanceToBoss(MegaBoss* boss);
@@ -91,12 +108,22 @@ public:
 
     bool IsDestroyed();
 
+    
+
     std::string getOrientationString() const;
 
+    sf::Vector2f getLastPosition()
+    {
+        return m_lastPosition;
+    }
+
+    IPhysics* m_physics;
 
 private:
-    IShapeSFML* m_background;
+    //IShapeSFML* m_background;
     IShapeSFML* m_target;
+
+    sf::View m_view;
 
     float m_angle;
     Timer m_elapsedTime;
@@ -104,10 +131,9 @@ private:
     Timer m_meleeAttackTimer;
 
     AnimateSprite m_animate;
-
     AnimationComponent* m_animationComponent;
-
-    IPhysics* m_physics;
+    
+    
     ITurret* m_turret;
     KT::VectorND<bool, 4> m_strafe{ false,false,false,false };
 
@@ -120,4 +146,11 @@ private:
     void setupAnimations();
     Orientation determineOrientation(float angle);
     Orientation m_currentOrientation;
+
+    const sf::Vector2f& m_lastPosition;
+
+
+    float PlateformeXmin=0.f;
+    float PlateformeXmax=0.f;
+    float PlateformeY = 0.f;
 };

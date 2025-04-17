@@ -48,6 +48,7 @@ protected:
 
 private:
     float m_damage;
+    sf::Vector2f getLastPosition() {}
 };
 
 class FastProjectile : public EntityProjectileBase

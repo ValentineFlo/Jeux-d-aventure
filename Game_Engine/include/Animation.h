@@ -7,9 +7,9 @@
 
 
 enum class Orientation {
-    DOWN,
-    UP,
     LEFT,
+    UP,
+    DOWN,
     RIGHT
 };
 
@@ -68,6 +68,8 @@ public:
 
     void updatePosition(const sf::Vector2f& position);
     void setScale(const sf::Vector2f& scale);
+
+    void setScaleHoryzontalMirror(const sf::Vector2f& scale);
     sf::Vector2f getScale() const;
 
     bool isAnimationFinished() const;

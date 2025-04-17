@@ -54,7 +54,9 @@
 #include "Collision.h"
 #include "SceneBase.h"
 #include "GameObject.h"
+#include "Mashroom.h"
 #include "ISpawner.h"
+#include "RegionManager.h"
 
 bool Collision(AABB a, AABB b);
 
@@ -69,11 +71,13 @@ public:
 
 private:
 	sf::RectangleShape m_Ship;
-	Cursor cursor;
+	//Cursor cursor;
 	Colision collision;
 	//AsteroidSpawner* m_spawner;
 	//BossSpawner* m_bossSpawner;
 	Timer m_bossSpawnTimer;
-
+	
 	Hero* m_hero;
+	/*Mashroom* m_champipi;*/
+	RegionManager m_regionManager;
 };

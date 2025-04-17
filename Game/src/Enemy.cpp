@@ -251,15 +251,18 @@ void Enemy::patrol()
     static bool movingRight = true;
     static float patrolWidth = 400.0f;
 
-    if (movingRight) {
+    if (movingRight) 
+    {
         m_worldPosition.x += m_speed * 0.01f;
-        if (m_worldPosition.x >= patrolWidth) {
+        if (m_worldPosition.x >= patrolWidth) 
+        {
             movingRight = false;
         }
     }
     else {
         m_worldPosition.x -= m_speed * 0.01f;
-        if (m_worldPosition.x <= -patrolWidth) {
+        if (m_worldPosition.x <= -patrolWidth) 
+        {
             movingRight = true;
         }
     }

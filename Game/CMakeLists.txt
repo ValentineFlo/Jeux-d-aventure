@@ -14,6 +14,7 @@ set(HEADERS
  ${HEADER_DIR}/MegaBoss.h
  ${HEADER_DIR}/BossBullet.h
  ${HEADER_DIR}/Enemy.h
+ ${HEADER_DIR}/Mashroom.h
 )
 set(SOURCES
 ${SOURCE_DIR}/Game.cpp
@@ -24,6 +25,7 @@ ${SOURCE_DIR}/ISpawner.cpp
 ${SOURCE_DIR}/MegaBoss.cpp
 ${SOURCE_DIR}/BossBullet.cpp
 ${SOURCE_DIR}/Enemy.cpp
+${SOURCE_DIR}/Mashroom.cpp
 )
 
 add_library(${PROJECT_NAME}
