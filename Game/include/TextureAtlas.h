@@ -685,8 +685,8 @@ public:
 		file << "\n";
 
 		file << "[TILE_DATA]" << "\n";
-		for (const auto& [position, tile] : tileMap)
-			file << "{" << position.x << "," << position.y << "}" << "  " << tile << "\n";
+		for (const auto& [position, pairTileandRegion] : tileMap)
+			file << "{" << position.x << "," << position.y << "}" << "  " << pairTileandRegion.first <<"  "<< pairTileandRegion.second <<"\n";
 
 		file.flush();
 		return true;
@@ -741,6 +741,7 @@ public:
 				else
 					throw std::runtime_error("Unknown metadata key: " + key);
 			}
+			//{16,6}  tile  Region
 			if (inTileDataSection == true && !line.empty())
 			{
 				auto braceopen = line.find('{');
@@ -751,6 +752,8 @@ public:
 				auto y = std::stoi(line.substr(comma + 1, braceclose - comma - 1));
 				auto tilepos = line.find_first_not_of(" ", braceclose + 1);
 				char tiletype = line[tilepos];
+				auto region = line.find_first_not_of(" ", tilepos + 1);
+
 				if (x >= m_minX && x <= m_maxX && y >= m_minY && y <= m_maxY)
 				{
 					map.setTile({ x,y }, (tiletype));
