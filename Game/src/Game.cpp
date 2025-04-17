@@ -5,13 +5,15 @@
 
 Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* texture) :
 	ISceneBase(window, framerate, texture),
-	cursor(this),
+	//cursor(this),
 	m_bossSpawnTimer(10.0f)
 
 {
 	m_Background = new SquareSFML(10000, sf::Vector2f(0, 0));
-	m_Background->setTexture(m_texture->getTexture("Map.png"));
+	m_Background->setTexture(m_texture->getTexture("marsmid.png"));
 	m_hero = new Hero(this, m_Background);
+	/*m_champipi = new Mashroom(600.0f, -1650.0f, 50.0f, 50.0f, m_Background, this);*/
+
 	
 	//m_regionManager.addRegion(COLLISIONABLE, 850.0f, 500.0f, 900.0f, 50.0f, m_Background, this);
 	//m_regionManager.addRegion(DESTRUCTEUR, 10.0f, 130.0f, 900.0f, 900.0f, m_Background, this);
@@ -20,7 +22,8 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 	m_regionManager.addRegion(COLLISIONABLE, 2900.0f, -1700.0f, 2000.0f, 25.0f, m_Background, this);
 	m_regionManager.addRegion(COLLISIONABLE, 800.0f, -2500.0f, 500.0f, 25.0f, m_Background, this);
 
-	m_regionManager.addRegion(PLATEFORME, 500.0f, -1650.0f, 80.0f, 90.0f, m_Background, this);
+	m_regionManager.addRegion(PLATEFORME, 500.0f, -1650.0f, 80.0f, 90.0f, m_Background, this);/*
+	m_regionManager.addRegion(DESTRUCTEUR, 800.0f, -1650.0f, 80.0f, 90.0f, m_Background, this);*/
 
 	new BorderShip(m_hero, m_Background, static_cast<Hero*>(m_hero));
 	new GameBorder(this, m_Background, Position::Down, 5);
@@ -46,7 +49,7 @@ void Game::Update(const float& deltatime)
 		obj->Update(deltatime);
 	}
 
-	cursor.Update(deltatime);
+	//cursor.Update(deltatime);
 	//m_spawner->Spawn();
 
 	//m_bossSpawnTimer.NextTIck(deltatime);
@@ -68,7 +71,7 @@ void Game::ProcessInput(const sf::Event& event)
 	{
 		obj->ProcessInput(event);
 	}
-	cursor.ProcessInput(event);
+	//cursor.ProcessInput(event);
 
 }
 
@@ -79,5 +82,5 @@ void Game::Render()
 	{
 		obj->Render();
 	}
-	cursor.Render();
+	//cursor.Render();
 }

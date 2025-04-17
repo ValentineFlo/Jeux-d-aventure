@@ -10,6 +10,8 @@ protected:
     {
         IDLE,
         MOVE,
+        JUMP,
+        FALL,
         HAND_ATTACK,
         PISTOL_ATTACK,
         RELOAD
@@ -32,6 +34,20 @@ protected:
     struct MoveState : IState
     {
         ~MoveState() override = default;
+        IState* handle(const State& state) override;
+        void update(Hero* ship, float deltaTime) override;
+    };
+
+    struct JumpState : IState
+    {
+        ~JumpState() override = default;
+        IState* handle(const State& state) override;
+        void update(Hero* ship, float deltaTime) override;
+    };
+
+    struct FallState : IState
+    {
+        ~FallState() override = default;
         IState* handle(const State& state) override;
         void update(Hero* ship, float deltaTime) override;
     };
@@ -82,6 +98,7 @@ public:
     float anglecalcul();
     void HandleCollision(IGameObject* object) override;
     void ChangeLife(const float& life) override;
+    void ChangeLifewithoutinvincibility(const float& life);
 
     void ChangeState(const State& newState);
     float distanceToBoss(MegaBoss* boss);
@@ -99,6 +116,7 @@ public:
     }
 
     IPhysics* m_physics;
+
 private:
     IShapeSFML* m_background;
     IShapeSFML* m_target;

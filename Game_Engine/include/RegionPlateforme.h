@@ -16,15 +16,6 @@ public:
         , m_game_object(game_object)
 
     {
-        m_txtInteractionfont.loadFromFile("8514oem.fon");
-        sf::Text text("hello", m_txtInteractionfont);
-        text.setCharacterSize(30);
-        text.setStyle(sf::Text::Bold);
-        text.setFillColor(sf::Color::Blue);
-        text.setPosition(x / 2, y / 2);
-
-        m_text = text;
-
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y);
         m_shape.setFillColor(sf::Color(0, 0, 0, 0));
@@ -51,7 +42,7 @@ public:
         {
             if (!m_toogle)
             {
-                //Hero* hero = static_cast<Hero*>(obj);
+
                 m_shape.setOutlineColor(sf::Color::Blue);
                 m_toogle = true;
             }
@@ -60,6 +51,27 @@ public:
             {
                 m_shape.setOutlineColor(sf::Color::Yellow);
                 m_toogle = false;
+            }
+
+            for (IComponent* comp : m_scene->getRoot()->getFullTree())
+            {
+                IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+                if (!obj || obj == this)
+                    continue;
+
+                if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                    continue;
+
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+                    Hero* hero = static_cast<Hero*> (obj);
+                    hero->ChangeLifewithoutinvincibility(2);
+                    std::cout << hero->getCurrentLife() << std::endl;
+
+                }
+
             }
             
         }
@@ -121,18 +133,24 @@ public:
 
                 if (std::string(typeid(*obj).name()) == "class Hero")
                 {
-                    Hero* hero = static_cast<Hero*>(obj);
                     is_inInteraction = true;
 
-
                 }
-                obj->HandleCollision(this);
+                else
+                    is_inInteraction = false;
 
+                obj->HandleCollision(this);
 
             }
             else
-                is_inInteraction = false;
+            {
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+                    is_inInteraction = false;
 
+                }
+            }
+            
         }
 
     }

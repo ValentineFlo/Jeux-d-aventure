@@ -1,3 +1,4 @@
+
 #pragma once
 #include "Region.h"
 
@@ -14,69 +15,176 @@ public:
         , m_width(width)
         , m_height(height)
         , m_game_object(game_object)
-    {}
 
+    {
+        m_txtInteractionfont.loadFromFile("8514oem.fon");
+        sf::Text text("hello", m_txtInteractionfont);
+        text.setCharacterSize(30);
+        text.setStyle(sf::Text::Bold);
+        text.setFillColor(sf::Color::Blue);
+        text.setPosition(x / 2, y / 2);
+
+        m_text = text;
+
+        m_shape.setSize(sf::Vector2f(width, height));
+        m_shape.setPosition(x, y);
+        m_shape.setFillColor(sf::Color(0, 0, 0, 0));
+        m_shape.setOutlineThickness(2.0f);
+
+    }
 
     void Update(const float& deltatime) override
     {
-        std::cout << "lets goooooooo update resuciteur" << std::endl;
+        FixPosition();
+        HandleCollision();
     }
+
 
     void ProcessInput(const sf::Event& event)
     {
-        std::cout << "process collision" << std::endl;
+        bool press = sf::Keyboard::isKeyPressed(sf::Keyboard::E);
+
+        if (!is_inInteraction)
+            return;
+
+
+        if (press && !m_pressed)
+        {
+            if (!m_toogle)
+            {
+
+                m_shape.setOutlineColor(sf::Color::Blue);
+                m_toogle = true;
+            }
+
+            else
+            {
+                m_shape.setOutlineColor(sf::Color::Yellow);
+                m_toogle = false;
+            }
+
+            for (IComponent* comp : m_scene->getRoot()->getFullTree())
+            {
+                IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+                if (!obj || obj == this)
+                    continue;
+
+                if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                    continue;
+
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+
+                    Hero* hero = static_cast<Hero*> (obj);
+                    hero->ChangeLifewithoutinvincibility(2);
+                    std::cout << hero->getCurrentLife() << std::endl;
+
+                }
+
+            }
+
+        }
+
+        m_pressed = press;
+
     }
 
     void Render() override
     {
-        std::cout << "lets goooooooo render resuciteur" << std::endl;
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_text);
     }
 
     void FixPosition() override
     {
+
         m_shape.setSize(sf::Vector2f(m_width, m_height));
         m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+        m_text.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
         if (m_game_object)
         {
             sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos);
+            m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
+            m_text.setPosition(m_x / 2, m_y / 2);
         }
+
     }
+
 
     AABB getBoundingBox() const override
     {
-        return AABB(sf::Vector2f(m_x, m_y), sf::Vector2f(m_x + m_width, m_y + m_height));
+        sf::Vector2f pos = m_shape.getPosition();
+        sf::Vector2f half = m_shape.getSize() / 2.f;
+        return AABB(pos - half, pos + half);
     }
-
-    float getX() const { return m_x; }
-    float getY() const { return m_y; }
-
 
 
     void HandleCollision() override
     {
-        AABB boundingBox = getBoundingBox();
+        AABB regionBox = getBoundingBox();
 
-        //for (auto& objet : m_scene->getRoot()->getScene()->getFullTree())
-        //{
-        //    if (Collision(boundingBox, ))
-        //    {
-        //        std::cout << "Collision detected!" << std::endl;
-        //    }
-        //}
+        for (IComponent* comp : m_scene->getRoot()->getFullTree())
+        {
+            IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+            if (!obj || obj == this)
+                continue;
 
+            if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                continue;
+
+            AABB objetBox = obj->GetBoundingBox();
+
+
+            if (regionBox.Intersects(objetBox))
+            {
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+                    is_inInteraction = true;
+
+
+                }
+                else
+                    is_inInteraction = false;
+
+                obj->HandleCollision(this);
+
+            }
+            else
+            {
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+                    is_inInteraction = false;
+
+                }
+            }
+
+        }
 
     }
-    
+
+
+    float getX() const { return m_x; }
+    float getY() const { return m_y; }
 
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;
     }
+
+
 private:
-	sf::RectangleShape m_shape;
+    sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;
     IShapeSFML* m_game_object;
-
+    sf::Font m_txtInteractionfont;
+    sf::Text m_text;
+    bool is_inInteraction = false;
+    bool m_toogle = false;
+    bool m_pressed = false;
 };
+

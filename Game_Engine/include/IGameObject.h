@@ -180,6 +180,7 @@ public:
 
 protected:
     float m_life;
+    float m_maxlife = m_life;
 };
 
 class NonDestructibleObject : public IGameObject {

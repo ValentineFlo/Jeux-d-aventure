@@ -203,10 +203,17 @@ void AnimationComponent::updatePosition(const sf::Vector2f& position)
     m_sprite.setScale(currentScale);
 }
 
+
 void AnimationComponent::setScale(const sf::Vector2f& scale)
 {
     m_scale = scale;
     m_sprite.setScale(scale);
+}
+
+void AnimationComponent::setScaleHoryzontalMirror(const sf::Vector2f& scale)
+{
+    m_scale = scale;
+    m_sprite.setScale(-scale.x, scale.y);
 }
 
 sf::Vector2f AnimationComponent::getScale() const
