@@ -145,15 +145,7 @@ void Hero::MoveState::update(Hero* ship, float deltaTime)
         ship->m_animationComponent->setScale(sf::Vector2f(-3.0f, 3.0f));
     }
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && ship->m_meleeAttackTimer.ActionIsReady())
-    {
-        ship->ChangeState(State::HAND_ATTACK);
-        ship->m_meleeAttackTimer.resetTimer();
-    }
-    else if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-    {
-        ship->ChangeState(State::PISTOL_ATTACK);
-    }
+    
 
     static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
         ship->m_strafe,
