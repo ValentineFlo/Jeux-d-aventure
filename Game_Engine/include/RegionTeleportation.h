@@ -5,7 +5,7 @@ class TeleportationRegion : public IRegion, public NonDestructibleObject, public
 {
 public:
 
-	TeleportationRegion(float x, float y, float width, float height, IShapeSFML* game_object, IComposite* scene)
+	TeleportationRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
         , NonDestructibleObject(scene)
         , IComposite(scene)
@@ -13,7 +13,6 @@ public:
         , m_y(y)
         , m_width(width)
         , m_height(height)
-        , m_game_object(game_object)
     {}
 
     void Update(const float& deltatime) override
@@ -34,13 +33,14 @@ public:
 
     void FixPosition() override
     {
-        m_shape->setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
-        if (m_game_object)
-        {
-            sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape->setPosition(basePos);
-        }
+        //if (m_game_object)
+        //{
+        //    sf::Vector2f basePos = m_game_object->getPosition();
+        //    m_shape.setPosition(basePos);
+        //}
     }
 
     AABB getBoundingBox() const override
@@ -72,6 +72,5 @@ public:
 private:
 	RectangleSFML* m_shape;
     float m_x, m_y, m_width, m_height;
-    IShapeSFML* m_game_object;
 
 };

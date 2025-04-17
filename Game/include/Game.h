@@ -76,7 +76,7 @@ private:
 	//AsteroidSpawner* m_spawner;
 	//BossSpawner* m_bossSpawner;
 	Timer m_bossSpawnTimer;
-
+	
 	Hero* m_hero;
 	/*Mashroom* m_champipi;*/
 	RegionManager m_regionManager;

@@ -87,7 +87,7 @@ protected:
 
 public:
     friend BorderShip;
-    Hero(IComposite* scene, IShapeSFML* background);
+    Hero(IComposite* scene, sf::Vector2f BasePosition);
     ~Hero() override;
 
     void ProcessInput(const sf::Event& event) override;
@@ -108,6 +108,8 @@ public:
 
     bool IsDestroyed();
 
+    
+
     std::string getOrientationString() const;
 
     sf::Vector2f getLastPosition()
@@ -118,8 +120,10 @@ public:
     IPhysics* m_physics;
 
 private:
-    IShapeSFML* m_background;
+    //IShapeSFML* m_background;
     IShapeSFML* m_target;
+
+    sf::View m_view;
 
     float m_angle;
     Timer m_elapsedTime;
@@ -148,4 +152,5 @@ private:
 
     float PlateformeXmin=0.f;
     float PlateformeXmax=0.f;
+    float PlateformeY = 0.f;
 };

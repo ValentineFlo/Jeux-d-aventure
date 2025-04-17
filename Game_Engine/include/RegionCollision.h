@@ -7,7 +7,7 @@ class CollisionRegion : public IRegion, public NonDestructibleObject, public ICo
 {
 public:
 
-    CollisionRegion(float x, float y, float width, float height, IShapeSFML* game_object, IComposite* scene)
+    CollisionRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
         , NonDestructibleObject(scene)
         , IComposite(scene)
@@ -15,7 +15,6 @@ public:
         , m_y(y)
         , m_width(width)
         , m_height(height)
-        , m_game_object(game_object)
 
     {
         m_shape.setSize(sf::Vector2f(width, height));
@@ -48,14 +47,16 @@ public:
 
     void FixPosition() override
     {
-        m_shape.setSize(sf::Vector2f(m_width, m_height));
-        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+        //m_shape.setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
-        if (m_game_object)
-        {
-            sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
-        }
+        //if (m_game_object)
+        //{
+        //    sf::Vector2f basePos = m_game_object->getPosition();
+        //    m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
+        //}
+        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+        m_shape.setPosition( m_x, m_y);
     }
 
 
@@ -91,6 +92,7 @@ public:
                 {
                     Hero* hero = static_cast<Hero*>(obj);
                     static_cast<Physics*>(hero->m_physics)->on_ground = true;
+                    static_cast<Physics*>(hero->m_physics)->m_velocity.y = 0.f;
                     /*hero->getShape()->setPosition(hero->getLastPosition());*/
 
                 }
@@ -121,6 +123,6 @@ public:
 private :
     sf::RectangleShape m_shape;
     float m_x, m_y, m_width, m_height;
-    IShapeSFML* m_game_object;
+    //IShapeSFML* m_game_object;
 };
 

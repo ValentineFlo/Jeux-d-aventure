@@ -40,11 +40,12 @@ public:
 	float getFrictionCoef() { return m_frictionCoef; }
 	float getThrust() { return m_thrust; }
 	bool on_ground=false;
+	sf::Vector2f m_velocity;
 private:
 	float m_maxVelocity;
 	float m_frictionCoef;
 	float m_thrust;
-	sf::Vector2f m_velocity;
+	
 	//std::array<float, 4> movementDirection;
 };
 
@@ -53,19 +54,20 @@ class IBorder : public NonDestructibleObject, public ILeaf
 {
 public:
 
-	IBorder(IComposite* scene, IShapeSFML* object);
+	IBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size);
 	void ProcessInput(const sf::Event& event) override = 0;
 	void Update(const float& deltatime);
 	void Render() override = 0;
 
 protected:
-	IShapeSFML* m_ObjectToProtect;
+	sf::Vector2f m_position;
+	sf::Vector2f m_size;
 };
 
 class BorderShip : public IBorder
 {
 public:
-	BorderShip::BorderShip(IComposite* scene, IShapeSFML* game_object, Hero* ship);
+	BorderShip::BorderShip(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Hero* ship);
 	void ProcessInput(const sf::Event& event) override {}
 	void Update(const float& deltatime);
 	void Render() override;
@@ -89,26 +91,26 @@ enum class Position
 class ExternBorder : public IBorder
 {
 public:
-	ExternBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize);
+	ExternBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize);
 	void ProcessInput(const sf::Event& event) override {}
 	void Update(const float& deltatime);
 	void Render() override;
 protected:
 	sf::Vector2f m_diffposition;
-	float m_BorderSize;
+	sf::Vector2f m_worldSize;
 };
 
 class WorldBorder : public ExternBorder
 {
 public:
-	WorldBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize, float Securitydistance);
+	WorldBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize, float Securitydistance);
 	void HandleCollision(IGameObject* object) override;
 };
 
 class GameBorder : public ExternBorder
 {
 public:
-	GameBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize);
+	GameBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize);
 	void HandleCollision(IGameObject* object) override;
 };
 
@@ -126,8 +128,10 @@ public:
 	void SetOverloadGun(const float& overloadcoodown, float MaxShot);
 	IShapeSFML* getGameObject() const { return m_gameObject; }
 
-protected:
 	sf::Vector2f m_positionDiff;
+	float angle = 0.f;
+protected:
+	
 	IShapeSFML* m_gameObject;
 	Timer m_fireRate;
 	Timer m_coolDown;
@@ -152,6 +156,7 @@ public:
 	void Update(const float& deltatime);
 	void Render() override;
 	void Fire() override;
+	
 private:
 	float m_angleDiff;
 	SquareSFML BaseShape;

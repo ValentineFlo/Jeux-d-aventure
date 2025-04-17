@@ -5,7 +5,7 @@ class PlateformeRegion : public IRegion, public NonDestructibleObject, public IC
 {
 public:
 
-    PlateformeRegion(float x, float y, float width, float height, IShapeSFML* game_object, IComposite* scene)
+	PlateformeRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
         , NonDestructibleObject(scene)
         , IComposite(scene)
@@ -13,7 +13,6 @@ public:
         , m_y(y)
         , m_width(width)
         , m_height(height)
-        , m_game_object(game_object)
 
     {
         m_shape.setSize(sf::Vector2f(width, height));
@@ -88,18 +87,14 @@ public:
 
     void FixPosition() override
     {
+        //m_shape.setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
-        m_shape.setSize(sf::Vector2f(m_width, m_height));
-        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
-        m_text.setOrigin(m_width / 2.0f, m_height / 2.0f);
-
-        if (m_game_object)
-        {
-            sf::Vector2f basePos = m_game_object->getPosition();
-            m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
-            m_text.setPosition(m_x / 2, m_y / 2);
-        }
-
+        //if (m_game_object)
+        //{
+        //    sf::Vector2f basePos = m_game_object->getPosition();
+        //    m_shape.setPosition(basePos);
+        //}
     }
 
 
