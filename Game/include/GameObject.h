@@ -128,8 +128,10 @@ public:
 	void SetOverloadGun(const float& overloadcoodown, float MaxShot);
 	IShapeSFML* getGameObject() const { return m_gameObject; }
 
-protected:
 	sf::Vector2f m_positionDiff;
+	float angle = 0.f;
+protected:
+	
 	IShapeSFML* m_gameObject;
 	Timer m_fireRate;
 	Timer m_coolDown;
@@ -154,6 +156,7 @@ public:
 	void Update(const float& deltatime);
 	void Render() override;
 	void Fire() override;
+	
 private:
 	float m_angleDiff;
 	SquareSFML BaseShape;

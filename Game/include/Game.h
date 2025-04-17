@@ -70,7 +70,7 @@ public:
 
 private:
 	sf::RectangleShape m_Ship;
-	Cursor cursor;
+	//Cursor cursor;
 	Colision collision;
 	//AsteroidSpawner* m_spawner;
 	//BossSpawner* m_bossSpawner;

@@ -81,7 +81,10 @@ public:
             {
                 std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
 
-                DestructibleObject* objDestru = dynamic_cast<DestructibleObject*>(obj);
+
+
+                DestructibleObject* objDestru = static_cast<DestructibleObject*>(obj);
+
                 if (objDestru)
                 {
                     objDestru->ChangeLife(3);

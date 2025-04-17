@@ -5,7 +5,7 @@
 
 Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* texture) :
 	ISceneBase(window, framerate, texture),
-	cursor(this),
+	//cursor(this),
 	m_bossSpawnTimer(10.0f)
 
 {
@@ -45,7 +45,7 @@ void Game::Update(const float& deltatime)
 		obj->Update(deltatime);
 	}
 
-	cursor.Update(deltatime);
+	//cursor.Update(deltatime);
 	//m_spawner->Spawn();
 
 	//m_bossSpawnTimer.NextTIck(deltatime);
@@ -67,7 +67,7 @@ void Game::ProcessInput(const sf::Event& event)
 	{
 		obj->ProcessInput(event);
 	}
-	cursor.ProcessInput(event);
+	//cursor.ProcessInput(event);
 
 }
 
@@ -78,5 +78,5 @@ void Game::Render()
 	{
 		obj->Render();
 	}
-	cursor.Render();
+	//cursor.Render();
 }

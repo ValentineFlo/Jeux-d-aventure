@@ -248,7 +248,7 @@ void ITurret::SetOverloadGun(const float& overloadcoodown, float MaxShot)
 }
 
 
-PlayerSprite::PlayerSprite() : AnimateSprite({ "PlayerBullet.png","PlayerBullet2.png" })
+PlayerSprite::PlayerSprite() : AnimateSprite({ "bullet.png" })
 {
 }
 
@@ -306,7 +306,7 @@ void FixTurret::Fire()
 		m_coolDown.resetTimer();
 	if (m_fireRate.ActionIsReady() && !m_masShot.CounterMax())
 	{
-		new ClassicBullet(PlayerSprite{}, this, this, m_shape->getangle(), m_bulletSpeed, m_bulletSize, m_bulletLife);
+		new ClassicBullet(PlayerSprite{}, this, this, angle, m_bulletSpeed, m_bulletSize, m_bulletLife);
 		m_masShot.NextTIck();
 		m_fireRate.resetTimer();
 	}
@@ -393,6 +393,7 @@ ClassicBullet::ClassicBullet(AnimateSprite animate, IComposite* scene, ITurret* 
 	m_shape = new SquareSFML(size, m_gunPosition);
 	m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 	m_shape->setRotation(m_gunangle);
+	m_shape->setSize({50.f, 50.f});
 }
 
 void ClassicBullet::Render()
@@ -405,6 +406,7 @@ void ClassicBullet::Update(const float& deltatime)
 	float angleRad = convertDegToRad(m_gunangle);
 	sf::Vector2f moov(std::cos(angleRad) * m_speed * m_scene->getRoot()->getScene()->getRefreshTime().asSeconds(), std::sin(angleRad) * m_speed * m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
 	m_gunPosition += moov;
+	m_shape->setSize({ 50.f, 50.f });
 	m_shape->setPosition(m_gunPosition);
 
 	if (m_elapsedTime.AutoActionIsReady(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds())) {

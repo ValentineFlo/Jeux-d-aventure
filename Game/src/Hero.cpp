@@ -6,6 +6,7 @@
 #include "Region.h"
 #include "RegionCollision.h"
 
+
 //=========== IDLE STATE ===========//
 Hero::IState* Hero::IdleState::handle(const State& state)
 {
@@ -13,7 +14,6 @@ Hero::IState* Hero::IdleState::handle(const State& state)
     {
         return new MoveState;
     }
-
     if (state == State::HAND_ATTACK)
     {
         return new HandAttackState();
@@ -43,11 +43,6 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
         return;
     }
 
-    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
-        ship->m_strafe,
-        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
-    );
-
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && ship->m_meleeAttackTimer.ActionIsReady())
     {
         ship->ChangeState(State::HAND_ATTACK);
@@ -58,11 +53,19 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
     {
         ship->ChangeState(State::PISTOL_ATTACK);
     }
+
+    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
+        ship->m_strafe,
+        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
+    );
+
+
 }
 
 //=========== MOVE STATE ===========//
 Hero::IState* Hero::MoveState::handle(const State& state)
 {
+
     if (state == State::IDLE)
     {
         return new IdleState();
@@ -77,6 +80,7 @@ Hero::IState* Hero::MoveState::handle(const State& state)
     {
         return new PistolAttackState();
     }
+
     return nullptr;
 }
 
@@ -87,7 +91,18 @@ void Hero::MoveState::update(Hero* ship, float deltaTime)
     {
         ship->m_animationComponent->playAnimation(animationName);
     }
-
+    if (ship->m_strafe[trust::Left])
+    {
+        ship->m_turret->m_positionDiff = sf::Vector2f(-15, 15);
+        ship->m_turret->getShape()->setRotation(180.f);
+        ship->m_turret->angle = 180.f;
+    }
+    if (ship->m_strafe[trust::Right])
+    {
+        ship->m_turret->m_positionDiff = sf::Vector2f(15, -25);
+        ship->m_turret->getShape()->setRotation(-180.f);
+        ship->m_turret->angle = 0.f;
+    }
     if (!ship->m_strafe[trust::Left]
         && !ship->m_strafe[trust::Right]
         && !ship->m_strafe[trust::Up]
@@ -97,10 +112,15 @@ void Hero::MoveState::update(Hero* ship, float deltaTime)
         return;
     }
 
-    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
-        ship->m_strafe,
-        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
-    );
+    if (ship->m_strafe[trust::Right])
+    {
+        ship->m_animationComponent->setScale(sf::Vector2f(3.0f, 3.0f));
+    }
+
+    if (ship->m_strafe[trust::Left])
+    {
+        ship->m_animationComponent->setScale(sf::Vector2f(-3.0f, 3.0f));
+    }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && ship->m_meleeAttackTimer.ActionIsReady())
     {
@@ -111,7 +131,18 @@ void Hero::MoveState::update(Hero* ship, float deltaTime)
     {
         ship->ChangeState(State::PISTOL_ATTACK);
     }
+
+    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
+        ship->m_strafe,
+        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
+    );
+
+
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 
 //=========== HAND ATTACK STATE ===========//
 Hero::IState* Hero::HandAttackState::handle(const State& state)
@@ -221,9 +252,10 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
     if (!ship->m_turret)
         throw std::runtime_error("ship est nullptr!");
 
+    
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
-        ship->m_turret->Fire();
+    	ship->m_turret->Fire();
     }
 
     if (ship->m_animationComponent->isAnimationFinished())
@@ -246,10 +278,10 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
     }
 
 
-        static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
-            ship->m_strafe,
-            ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
-        );
+    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
+        ship->m_strafe,
+        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
+ 
     
 }
 
@@ -307,14 +339,14 @@ Hero::Hero(IComposite* scene, sf::Vector2f BasePosition)
     m_animationComponent = new AnimationComponent(this);
     setupAnimations();
 
-    m_animationComponent->setScale(sf::Vector2f(4.0f, 4.0f));
+    m_animationComponent->setScale(sf::Vector2f(3.0f, 3.0f));
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 
     new Life(this, this, Color::Blue);
-    m_turret = new FixTurret(this, m_shape, sf::Vector2f(35, -25), 0.75);
+    m_turret = new FixTurret(this, m_shape, sf::Vector2f(15, -15), 0.f);
     m_turret->SetFireRate(0.2f); 
-    m_turret->SetOverloadGun(5, 30);
+    m_turret->SetOverloadGun(5, 10);
     m_turret->setBullet(0, 0, 0);
 
     m_currentState = new IdleState();
@@ -332,60 +364,62 @@ Hero::~Hero()
 
 void Hero::setupAnimations()
 {
-    const int FRAME_WIDTH = 64;
-    const int FRAME_HEIGHT = 64;
+    const int FRAME_WIDTH = 48;
+    const int FRAME_HEIGHT = 48;
 
-    const int IDLE_FRAMES = 6;
-    const int MOVE_FRAMES = 5;
-    const int ATTACK_FRAMES = 6;
+    const int IDLE_FRAMES = 4;
+    const int MOVE_FRAMES = 10;
+    const int ATTACK_FRAMES = 1;
 
-    Animation idleAnimDown("Hero.png", IDLE_FRAMES, 100.f);
+    Animation idleAnimDown("player1.png", IDLE_FRAMES, 100.f);
     idleAnimDown.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    idleAnimDown.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
+    idleAnimDown.setStartPosition(sf::Vector2i(0, 2 * FRAME_HEIGHT), 1);
 
-    Animation idleAnimUp("Hero.png", IDLE_FRAMES, 100.f);
+    Animation idleAnimUp("player1.png", IDLE_FRAMES, 100.f);
     idleAnimUp.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    idleAnimUp.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
+    idleAnimUp.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
 
-    Animation idleAnimLeft("Hero.png", IDLE_FRAMES, 100.f);
+    Animation idleAnimLeft("player1.png", IDLE_FRAMES, 100.f);
     idleAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    idleAnimLeft.setStartPosition(sf::Vector2i(0, 7 * FRAME_HEIGHT), 1);
+    idleAnimLeft.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
 
-    Animation idleAnimRight("Hero.png", IDLE_FRAMES, 100.f);
+    Animation idleAnimRight("player1.png", IDLE_FRAMES, 100.f);
     idleAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    idleAnimRight.setStartPosition(sf::Vector2i(0, 9 * FRAME_HEIGHT), 1);
+    idleAnimRight.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
 
-    Animation moveAnimDown("Hero.png", MOVE_FRAMES, 100.f); 
+
+    ///  
+    Animation moveAnimDown("player1.png", MOVE_FRAMES, 100.f);
     moveAnimDown.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     moveAnimDown.setStartPosition(sf::Vector2i(0, 1 * FRAME_HEIGHT), 1);
 
-    Animation moveAnimUp("Hero.png", MOVE_FRAMES, 100.f);
+    Animation moveAnimUp("player1.png", MOVE_FRAMES, 100.f);
     moveAnimUp.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     moveAnimUp.setStartPosition(sf::Vector2i(0, 4 * FRAME_HEIGHT), 1);
 
-    Animation moveAnimLeft("Hero.png", MOVE_FRAMES, 100.f);
+    Animation moveAnimLeft("player1.png", MOVE_FRAMES, 50.f);
     moveAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    moveAnimLeft.setStartPosition(sf::Vector2i(0, 6 * FRAME_HEIGHT), 1);
+    moveAnimLeft.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
 
-    Animation moveAnimRight("Hero.png", MOVE_FRAMES, 100.f);
+    Animation moveAnimRight("player1.png", MOVE_FRAMES, 50.f);
     moveAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    moveAnimRight.setStartPosition(sf::Vector2i(0, 10 * FRAME_HEIGHT), 1);
+    moveAnimRight.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
 
-    Animation attackAnimDown("Hero.png", ATTACK_FRAMES, 50, false);
+    Animation attackAnimDown("player1.png", ATTACK_FRAMES, 50, false);
     attackAnimDown.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     attackAnimDown.setStartPosition(sf::Vector2i(0, 2 * FRAME_HEIGHT), 1);
 
-    Animation attackAnimUp("Hero.png", ATTACK_FRAMES, 50, false);
+    Animation attackAnimUp("player1.png", ATTACK_FRAMES, 50, false);
     attackAnimUp.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     attackAnimUp.setStartPosition(sf::Vector2i(0, 5 * FRAME_HEIGHT), 1);
 
-    Animation attackAnimLeft("Hero.png", ATTACK_FRAMES, 50, false);
+    Animation attackAnimLeft("player.png", ATTACK_FRAMES, 100.f, false);
     attackAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    attackAnimLeft.setStartPosition(sf::Vector2i(0, 8 * FRAME_HEIGHT), 1);
+    attackAnimLeft.setStartPosition(sf::Vector2i(0, 9 * FRAME_HEIGHT), 1);
 
-    Animation attackAnimRight("Hero.png", ATTACK_FRAMES, 50, false);
+    Animation attackAnimRight("player.png", ATTACK_FRAMES, 100.f, false);
     attackAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
-    attackAnimRight.setStartPosition(sf::Vector2i(0, 11 * FRAME_HEIGHT), 1);
+    attackAnimRight.setStartPosition(sf::Vector2i(0, 9 * FRAME_HEIGHT), 1);
 
     m_animationComponent->addAnimation("idle_down", idleAnimDown);
     m_animationComponent->addAnimation("idle_up", idleAnimUp);
@@ -536,13 +570,14 @@ void Hero::Render()
 
 float Hero::anglecalcul()
 {
-    sf::Vector2i mousePos = sf::Mouse::getPosition(*m_scene->getRoot()->getScene()->getWindow());
-    sf::Vector2f mousePosView = m_scene->getRoot()->getScene()->getWindow()->mapPixelToCoords(mousePos);
-    sf::Vector2f shipPos = m_shape->getPosition();
-    float deltaX = mousePosView.x - shipPos.x;
-    float deltaY = mousePosView.y - shipPos.y;
-    float angle = std::atan2(deltaY, deltaX) * 180 / 3.14159f;
-    return angle;
+    //sf::Vector2i mousePos = sf::Mouse::getPosition(*m_scene->getRoot()->getScene()->getWindow());
+    //sf::Vector2f mousePosView = m_scene->getRoot()->getScene()->getWindow()->mapPixelToCoords(mousePos);
+    //sf::Vector2f shipPos = m_shape->getPosition();
+    //float deltaX = mousePosView.x - shipPos.x;
+    //float deltaY = mousePosView.y - shipPos.y;
+    //float angle = std::atan2(deltaY, deltaX) * 180 / 3.14159f;
+    //return angle;
+    return 0.f;
 }
 
 void Hero::HandleCollision(IGameObject* object)
