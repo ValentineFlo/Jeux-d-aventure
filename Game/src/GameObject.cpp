@@ -4,8 +4,11 @@
 #include <iostream>
 #include "RandomNumber.h"
 
-IBorder::IBorder(IComposite* scene, IShapeSFML* object) :
-	NonDestructibleObject(scene), ILeaf(scene), m_ObjectToProtect(object)
+IBorder::IBorder(IComposite* scene,sf::Vector2f BasePosition, sf::Vector2f Size)
+	:NonDestructibleObject(scene)
+	, ILeaf(scene)
+	,m_position(BasePosition)
+	,m_size(Size)
 {
 }
 
@@ -13,21 +16,21 @@ void IBorder::Update(const float& deltatime)
 {
 }
 
-BorderShip::BorderShip(IComposite* scene, IShapeSFML* game_object, Hero* ship) :
-	IBorder(scene, game_object)
+BorderShip::BorderShip(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Hero* ship) :
+	IBorder(scene, BasePosition, Size)
 	, m_ship(ship)
 	, m_sprite({ "FenceTmp.png","FenceTmp2.png" })
 	, IsInBorder(false)
 	, m_elapsedTime(0.2)
 {
-	m_shape = new CircleSFML(m_ObjectToProtect->getSize().x / 2, m_ObjectToProtect->getCenter());
+	m_shape = new CircleSFML(m_size.x / 2.f, m_position);
 	m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_sprite.getCurrentPath()));
 }
 
 void BorderShip::Update(const float& deltatime)
 {
-	m_shape->setPosition(m_ObjectToProtect->getPosition());
-	m_ship->m_background->setPosition(VerifyLimit());
+	m_shape->setPosition(m_position);
+	m_ship->m_shape->setPosition(VerifyLimit());
 	if (m_elapsedTime.AutoActionIsReady(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()))
 	{
 		m_sprite.ChangeToNextPath();
@@ -43,7 +46,7 @@ void BorderShip::Render()
 sf::Vector2f BorderShip::VerifyLimit()
 {
 
-	sf::Vector2f centreBackground = m_ObjectToProtect->getPosition();
+	sf::Vector2f centreBackground = m_position;
 	sf::Vector2f positionVaisseau = m_ship->m_shape->getPosition();
 
 	float dx = positionVaisseau.x - centreBackground.x;
@@ -53,42 +56,42 @@ sf::Vector2f BorderShip::VerifyLimit()
 	float radius = (m_shape->getSize().x / 2 - m_ship->m_shape->getSize().x - Border) * (m_shape->getSize().x / 2 - m_ship->m_shape->getSize().x - Border);
 	if (distance > radius) {
 		float factor = radius / distance;
-		centreBackground.x = positionVaisseau.x - dx * factor;
-		centreBackground.y = positionVaisseau.y - dy * factor;
+		positionVaisseau.x = centreBackground.x + dx * factor;
+		positionVaisseau.y = centreBackground.y + dy * factor;
 	}
-	return centreBackground;
+	return positionVaisseau;
 }
 
-ExternBorder::ExternBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize) :IBorder(scene, game_object), m_diffposition(0, 0), m_BorderSize(BorderSize)
+ExternBorder::ExternBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize) :IBorder(scene, BasePosition, Size), m_diffposition(0, 0), m_worldSize(WorldSize)
 {
-	m_shape = new RectangleSFML(m_ObjectToProtect->getSize().x, m_ObjectToProtect->getSize().y, game_object->getCenter());
+	m_shape = new RectangleSFML(m_size.x, m_size.y, m_position);
 	switch (pos)
 	{
 	case Position::Up:
 	{
-		m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x, m_BorderSize));
+		m_shape->setSize(sf::Vector2f(m_worldSize.x, m_size.y));
 		m_diffposition.x = 0;
-		m_diffposition.y = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2);
+		m_diffposition.y = -(m_worldSize.y / 2.f - m_size.y / 2.f);
 		break;
 	}
 	case Position::Down:
 	{
-		m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x, m_BorderSize));
+		m_shape->setSize(sf::Vector2f(m_worldSize.x, m_size.y));
 		m_diffposition.x = 0;
-		m_diffposition.y = m_ObjectToProtect->getSize().y / 2 + m_BorderSize / 2;
+		m_diffposition.y = m_worldSize.y / 2 + m_size.y / 2;
 		break;
 	}
 	case Position::Left:
 	{
-		m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x));
-		m_diffposition.x = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2);
+		m_shape->setSize(sf::Vector2f(m_size.x, m_worldSize.y));
+		m_diffposition.x = -(m_worldSize.x / 2 - m_size.x / 2);
 		m_diffposition.y = 0;
 		break;
 	}
 	case Position::Right:
 	{
-		m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x));
-		m_diffposition.x = +(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2);
+		m_shape->setSize(sf::Vector2f(m_size.x, m_worldSize.x));
+		m_diffposition.x = +(m_worldSize.x / 2 - m_size.x / 2);
 		m_diffposition.y = 0;
 		break;
 	}
@@ -99,7 +102,7 @@ ExternBorder::ExternBorder(IComposite* scene, IShapeSFML* game_object, Position 
 
 void ExternBorder::Update(const float& deltatime)
 {
-	m_shape->setPosition(sf::Vector2f(m_ObjectToProtect->getPosition().x + m_diffposition.x, m_ObjectToProtect->getPosition().y + m_diffposition.y));
+	m_shape->setPosition(m_position+m_diffposition);
 }
 
 void ExternBorder::Render()
@@ -107,42 +110,76 @@ void ExternBorder::Render()
 	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<RectangleSFML*>(m_shape)->getShape());
 }
 
-WorldBorder::WorldBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize, float Securitydistance) : ExternBorder(scene, game_object, pos, BorderSize)
+WorldBorder::WorldBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize, float Securitydistance) : ExternBorder(scene, BasePosition, Size, pos, WorldSize)
 {
 
-	m_shape = new RectangleSFML(m_ObjectToProtect->getSize().x, m_ObjectToProtect->getSize().y, game_object->getCenter());
+	m_shape = new RectangleSFML(m_size.x, m_size.y,m_position);
+	//switch (pos)
+	//{
+	//case Position::Up:
+	//{
+	//	m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x + Securitydistance * 2, m_BorderSize));
+	//	m_diffposition.x = 0;
+	//	m_diffposition.y = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+	//	break;
+	//}
+	//case Position::Down:
+	//{
+	//	m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x + Securitydistance * 2, m_BorderSize));
+	//	m_diffposition.x = 0;
+	//	m_diffposition.y = m_ObjectToProtect->getSize().y / 2 + m_BorderSize / 2 + Securitydistance;
+	//	break;
+	//}
+	//case Position::Left:
+	//{
+	//	m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x + Securitydistance * 2));
+	//	m_diffposition.x = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+	//	m_diffposition.y = 0;
+	//	break;
+	//}
+	//case Position::Right:
+	//{
+	//	m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x + Securitydistance * 2));
+	//	m_diffposition.x = +(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+	//	m_diffposition.y = 0;
+	//	break;
+	//}
+
+	//}
+
 	switch (pos)
 	{
 	case Position::Up:
 	{
-		m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x + Securitydistance * 2, m_BorderSize));
+		m_shape->setSize(sf::Vector2f(m_worldSize.x + Securitydistance * 2, m_size.y));
 		m_diffposition.x = 0;
-		m_diffposition.y = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+		m_diffposition.y = -(m_worldSize.y / 2.f - m_size.y / 2.f + Securitydistance);
 		break;
 	}
 	case Position::Down:
 	{
-		m_shape->setSize(sf::Vector2f(m_ObjectToProtect->getSize().x + Securitydistance * 2, m_BorderSize));
+		m_shape->setSize(sf::Vector2f(m_worldSize.x + Securitydistance * 2, m_size.y));
 		m_diffposition.x = 0;
-		m_diffposition.y = m_ObjectToProtect->getSize().y / 2 + m_BorderSize / 2 + Securitydistance;
+		m_diffposition.y = m_worldSize.y / 2 + m_size.y / 2 + Securitydistance;
 		break;
 	}
 	case Position::Left:
 	{
-		m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x + Securitydistance * 2));
-		m_diffposition.x = -(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+		m_shape->setSize(sf::Vector2f(m_size.x, m_worldSize.y + Securitydistance * 2));
+		m_diffposition.x = -(m_worldSize.x / 2 - m_size.x / 2 + Securitydistance);
 		m_diffposition.y = 0;
 		break;
 	}
 	case Position::Right:
 	{
-		m_shape->setSize(sf::Vector2f(m_BorderSize, m_ObjectToProtect->getSize().x + Securitydistance * 2));
-		m_diffposition.x = +(m_ObjectToProtect->getSize().y / 2 - m_BorderSize / 2 + Securitydistance);
+		m_shape->setSize(sf::Vector2f(m_size.x, m_worldSize.y + Securitydistance * 2));
+		m_diffposition.x = +(m_worldSize.x / 2 - m_size.x / 2 + Securitydistance);
 		m_diffposition.y = 0;
 		break;
 	}
 
 	}
+
 	m_shape->setCenter(sf::Vector2f(m_shape->getSize().x / 2, m_shape->getSize().y / 2));
 }
 
@@ -156,7 +193,7 @@ void WorldBorder::HandleCollision(IGameObject* object)
 
 }
 
-GameBorder::GameBorder(IComposite* scene, IShapeSFML* game_object, Position pos, float BorderSize) :ExternBorder(scene, game_object, pos, BorderSize)
+GameBorder::GameBorder(IComposite* scene, sf::Vector2f BasePosition, sf::Vector2f Size, Position pos, sf::Vector2f WorldSize) :ExternBorder(scene, BasePosition,Size, pos, WorldSize)
 {
 }
 
@@ -440,7 +477,7 @@ void Life::Update(const float& deltatime)
 Cursor::Cursor(IComposite* scene) :
 	NonDestructibleObject(scene)
 	, ILeaf(scene)
-	, m_animate({ "Crossair.png","Crossair2.png","Crossair3.png" })
+	, m_animate({ "Crossair.png" }/*,"Crossair2.png","Crossair3.png" }*/)
 {
 	m_shape = new CircleSFML(43, scene->getRoot()->getScene());
 	m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
@@ -454,7 +491,8 @@ void Cursor::ProcessInput(const sf::Event& event)
 void Cursor::Update(const float& deltatime)
 {
 	sf::Vector2i mousePos = sf::Mouse::getPosition(*m_scene->getRoot()->getScene()->getWindow());
-	m_shape->setPosition(sf::Vector2f(mousePos.x, mousePos.y));
+	sf::Vector2f mousePosView = m_scene->getRoot()->getScene()->getWindow()->mapPixelToCoords(mousePos);
+	m_shape->setPosition(sf::Vector2f(mousePosView.x, mousePosView.y));
 }
 
 void Cursor::Render()
@@ -462,22 +500,69 @@ void Cursor::Render()
 	m_scene->getRoot()->getScene()->getWindow()->draw(static_cast<SquareSFML*>(m_shape)->getShape());
 }
 
-Physics::Physics(const float& maxVelocity)
-	: m_maxVelocity(maxVelocity), movementDirection{ 0, 0, 0, 0 } {
+Physics::Physics(const float& maxVelocity, const float& thrust, const float& frictionCoef)
+	: m_maxVelocity(maxVelocity)
+	,m_thrust(thrust)
+	,m_frictionCoef(frictionCoef)
+	,m_velocity{0.f,0.f}
+{
 }
 
 void Physics::ExecutePhysics(KT::VectorND<bool, 4>& isStrafing, float framerate)
 {
-	movementDirection[trust::Right] = isStrafing[trust::Left] ? m_maxVelocity : 0;
-	movementDirection[trust::Left] = isStrafing[trust::Right] ? -m_maxVelocity : 0;
-	movementDirection[trust::Up] = isStrafing[trust::Down] ? -m_maxVelocity : 0;
-	movementDirection[trust::Down] = isStrafing[trust::Up] ? m_maxVelocity : 0;
+	sf::Vector2f acceleration = { 0.f,0.f };
+
+
+	
+	
+	if (!on_ground)
+	{
+		acceleration -= 3000.f * sf::Vector2f{ std::cos(-3.14159f / 2.f), std::sin(-3.14159f / 2.f) };
+		isStrafing[trust::Down] = true;
+	}
+	if (isStrafing[trust::Up] && on_ground)
+	{
+		m_velocity.y -= 10000.f;
+		on_ground = false;
+	}
+
+			
+	if (isStrafing[trust::Left])
+		acceleration -= getThrust() * sf::Vector2f{ std::cos(0.f), 0 };
+	if (isStrafing[trust::Right])
+		acceleration += getThrust() * sf::Vector2f{ std::cos(0.f), 0 };
+
+	if (!isStrafing[trust::Left] && !isStrafing[trust::Right] && !isStrafing[trust::Up] && !isStrafing[trust::Down])
+		acceleration = -getFrictionCoef() * m_velocity;
+
+	
+
+	//std::cout << "Phi :  "<<m_velocity.y << std::endl;
+
+
+
+	m_velocity += acceleration * framerate;
+
+	if (m_velocity.y < 0 && on_ground)
+		m_velocity.y = 0.f;
+
+	float Length = std::sqrt(m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y);
+
+	if (m_velocity.x> getMaxVelocity() || m_velocity.x < -getMaxVelocity() || m_velocity.y < -getMaxVelocity())
+	{
+		m_velocity = m_velocity * (getMaxVelocity() / Length);
+
+	}
+	
+
+	//if (Length > getMaxVelocity())
+	//	m_velocity = m_velocity * (getMaxVelocity() / Length);
 }
 
 sf::Vector2f Physics::calculPosition(IShapeSFML* entity, ISceneBase* scene, float framerate)
 {
-	float x = movementDirection[trust::Left] + movementDirection[trust::Right];
-	float y = movementDirection[trust::Up] + movementDirection[trust::Down];
+	float x = m_velocity.x;
+	float y = m_velocity.y;
 
 	sf::Vector2f newPosition = {
 		entity->getPosition().x + (x * scene->getRefreshTime().asSeconds()),

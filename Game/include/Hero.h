@@ -71,7 +71,7 @@ protected:
 
 public:
     friend BorderShip;
-    Hero(IComposite* scene, IShapeSFML* background);
+    Hero(IComposite* scene, sf::Vector2f BasePosition);
     ~Hero() override;
 
     void ProcessInput(const sf::Event& event) override;
@@ -91,12 +91,21 @@ public:
 
     bool IsDestroyed();
 
+    
+
     std::string getOrientationString() const;
 
+    sf::Vector2f getLastPosition()
+    {
+        return m_lastPosition;
+    }
 
+    IPhysics* m_physics;
 private:
-    IShapeSFML* m_background;
+    //IShapeSFML* m_background;
     IShapeSFML* m_target;
+
+    sf::View m_view;
 
     float m_angle;
     Timer m_elapsedTime;
@@ -104,10 +113,9 @@ private:
     Timer m_meleeAttackTimer;
 
     AnimateSprite m_animate;
-
     AnimationComponent* m_animationComponent;
-
-    IPhysics* m_physics;
+    
+    
     ITurret* m_turret;
     KT::VectorND<bool, 4> m_strafe{ false,false,false,false };
 
@@ -120,4 +128,11 @@ private:
     void setupAnimations();
     Orientation determineOrientation(float angle);
     Orientation m_currentOrientation;
+
+    const sf::Vector2f& m_lastPosition;
+
+
+    float PlateformeXmin=0.f;
+    float PlateformeXmax=0.f;
+    float PlateformeY = 0.f;
 };

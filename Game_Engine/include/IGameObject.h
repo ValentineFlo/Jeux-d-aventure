@@ -2,15 +2,28 @@
 #include "SFML/Graphics.hpp"
 #include <vector>
 #include <memory>
+#include <iostream>
 
-struct AABB {
+struct AABB 
+{
     AABB(sf::Vector2f amin, sf::Vector2f amax) : Amin(amin), Amax(amax) {}
     sf::Vector2f Amin;
     sf::Vector2f Amax;
 
-    bool Intersects(const AABB& other) const {
+    bool Intersects(const AABB& other) const 
+    {
         return !(Amax.x < other.Amin.x || Amin.x > other.Amax.x ||
             Amax.y < other.Amin.y || Amin.y > other.Amax.y);
+    }
+
+    float getPosition()
+    {
+        
+    }
+
+    void setPosition(const AABB& aabb)
+    {
+        
     }
 };
 
@@ -22,13 +35,15 @@ class RootScene;
 class ISceneBase;
 class IComposite;
 
-enum class Component {
+enum class Component 
+{
     IComposite,
     ILeaf,
     IGameObject
 };
 
-class IComponent {
+class IComponent 
+{
 public:
     IComponent(IComposite* parent);
     virtual ~IComponent();
@@ -108,12 +123,14 @@ public:
     }
 };
 
-enum class GameObjectType {
+enum class GameObjectType 
+{
     DestructibleObject,
     NonDestructibleObject
 };
 
-class IGameObject {
+class IGameObject 
+{
 public:
     IGameObject(IComposite* scene);
     virtual ~IGameObject();
@@ -140,7 +157,8 @@ private:
     bool m_needDestroy;
 };
 
-class DestructibleObject : public IGameObject {
+class DestructibleObject : public IGameObject 
+{
 public:
     DestructibleObject(IComposite* scene, const float& life);
 
@@ -156,6 +174,11 @@ public:
 
     float getCurrentLife() { return m_life; }
     GameObjectType globalGameObjectType() override;
+
+
+
+
+    AABB GetBoundingBox() override;
 
 protected:
     float m_life;

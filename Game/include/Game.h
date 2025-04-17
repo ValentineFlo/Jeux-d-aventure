@@ -55,6 +55,7 @@
 #include "SceneBase.h"
 #include "GameObject.h"
 #include "ISpawner.h"
+#include "RegionManager.h"
 
 bool Collision(AABB a, AABB b);
 
@@ -74,6 +75,7 @@ private:
 	//AsteroidSpawner* m_spawner;
 	//BossSpawner* m_bossSpawner;
 	Timer m_bossSpawnTimer;
-
+	
 	Hero* m_hero;
+	RegionManager m_regionManager;
 };

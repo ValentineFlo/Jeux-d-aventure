@@ -1,30 +1,54 @@
 #pragma once
 #include "Region.h"
 
-class DestructeurRegion : public IRegion, public IGameObject
+class DestructeurRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
     DestructeurRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IGameObject(scene)
-    {}
+        , NonDestructibleObject(scene)
+        , IComposite(scene)
+        , m_x(x)
+        , m_y(y)
+        , m_width(width)
+        , m_height(height)
+    {
+        m_shape.setSize(sf::Vector2f(width, height));
+        m_shape.setPosition(x, y);
+        m_shape.setFillColor(sf::Color(0, 0, 0, 0));
+        m_shape.setOutlineColor(sf::Color::Blue);
+        m_shape.setOutlineThickness(2.0f);
+    }
 
 
     void Update(const float& deltatime) override
     {
-        std::cout << "lets goooooooo update destru" << std::endl;
+        FixPosition();
+        HandleCollision();
     }
 
     void ProcessInput(const sf::Event& event)
     {
-        std::cout << "process collision" << std::endl;
+        /*std::cout << "process collision" << std::endl;*/
     }
 
     void Render() override
     {
 
-        std::cout << "lets goooooooo render destru" << std::endl;
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
+    }
+
+    void FixPosition() override
+    {
+        //m_shape.setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+
+        //if (m_game_object)
+        //{
+        //    sf::Vector2f basePos = m_game_object->getPosition();
+        //    m_shape.setPosition(basePos.x - m_x, basePos.y - m_y);
+        //}
     }
 
     AABB getBoundingBox() const override
@@ -36,48 +60,53 @@ public:
     float getY() const { return m_y; }
 
 
-
-    // void FixPosition() override
-    // {
-
-    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
-
-
-    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
-
-    //     float dotposX = decalX - x;
-    //     float dotposY = decalY - y;
-
-    //     m_shape.setPosition(dotposX, dotposY);
-    // }
-
     void HandleCollision() override
     {
-        AABB boundingBox = getBoundingBox();
+        AABB regionBox = getBoundingBox();
 
-        //for (auto& objet : m_scene->getRoot()->getScene()->getFullTree())
-        //{
-        //    if (Collision(boundingBox, ))
-        //    {
-        //        std::cout << "Collision detected!" << std::endl;
-        //    }
-        //}
+        for (IComponent* comp : m_scene->getRoot()->getFullTree())
+        {
+            IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+            if (!obj || obj == this)
+                continue;
 
+            if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                continue;
+
+            AABB objetBox = obj->GetBoundingBox();
+
+            std::cout << obj->getShape()->getPosition().x << obj->getShape()->getPosition().y << std::endl;
+
+            if (regionBox.Intersects(objetBox))
+            {
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
+
+                DestructibleObject* objDestru = dynamic_cast<DestructibleObject*>(obj);
+                if (objDestru)
+                {
+                    objDestru->ChangeLife(3);
+                    
+                }
+
+                std::cout << typeid(obj).name()<< " " << typeid(objDestru).name() << std::endl;
+                std::cout << objDestru->getCurrentLife() << std::endl;
+
+                obj->HandleCollision(this);
+
+
+            }
+        }
 
     }
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
+    
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;
     }
+
 private:
 	sf::RectangleShape m_shape;
+    float m_x, m_y, m_width, m_height;
+    sf::Vector2f getLastPosition() {}
 
 };

@@ -1,18 +1,22 @@
 #pragma once
 #include "Region.h"
 #include "SceneBase.h"
+#include "Hero.h"
 
-class CollisionRegion : public IRegion, public IGameObject
+class CollisionRegion : public IRegion, public NonDestructibleObject, public IComposite
 {
 public:
 
     CollisionRegion(float x, float y, float width, float height, IComposite* scene)
         : IRegion(x, y, width, height)
-        , IGameObject(scene)
-
+        , NonDestructibleObject(scene)
+        , IComposite(scene)
+        , m_x(x)
+        , m_y(y)
+        , m_width(width)
+        , m_height(height)
 
     {
-
         m_shape.setSize(sf::Vector2f(width, height));
         m_shape.setPosition(x, y); 
         m_shape.setFillColor(sf::Color(0, 0, 0, 0));
@@ -24,10 +28,12 @@ public:
 
     void Update(const float& deltatime) override
     {
-		//FixPosition();
-        HandleCollision();
+		FixPosition();
+        
 
+        HandleCollision();
     }
+
 
     void ProcessInput(const sf::Event& event) 
     {
@@ -36,70 +42,87 @@ public:
 
     void Render() override
     {
-        getRoot()->getScene()->getWindow()->draw(m_shape);
+        m_scene->getRoot()->getScene()->getWindow()->draw(m_shape);
     }
 
-    // void FixPosition() override
-    // {
+    void FixPosition() override
+    {
+        //m_shape.setSize(sf::Vector2f(m_width, m_height));
+        //m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
 
-    //     float decalX = m_scene->getRoot()->getScene()->getLeftTopCorner().x;
-    //     float decalY = m_scene->getRoot()->getScene()->getLeftTopCorner().y;
+        //if (m_game_object)
+        //{
+        //    sf::Vector2f basePos = m_game_object->getPosition();
+        //    m_shape.setPosition(basePos.x + m_x, basePos.y - m_y);
+        //}
+        m_shape.setOrigin(m_width / 2.0f, m_height / 2.0f);
+        m_shape.setPosition( m_x, m_y);
+    }
 
-
-    //     float x = (m_scene->getRoot()->getScene()->getBackgroundSize().x / 2) - m_x;
-    //     float y = (m_scene->getRoot()->getScene()->getBackgroundSize().y / 2) - m_y;
-
-    //     float dotposX = decalX - x;
-    //     float dotposY = decalY - y;
-
-    //     m_shape.setPosition(dotposX, dotposY);
-    // }
 
 	AABB getBoundingBox() const override
 	{
-		return AABB(sf::Vector2f(m_x, m_y), sf::Vector2f(m_x + m_width, m_y + m_height));
-
+        sf::Vector2f pos = m_shape.getPosition();
+        sf::Vector2f half = m_shape.getSize() / 2.f;
+        return AABB(pos - half, pos + half);
 	}
 
 
     void HandleCollision() override
     {
+        AABB regionBox = getBoundingBox();
 
-        std::cout << "Region" << std::endl;
-
-
-        /*for (IGameObject* objet :)
+        for (IComponent* comp : m_scene->getRoot()->getFullTree())
         {
-            if (objet == this) continue;
+            IGameObject* obj = dynamic_cast<IGameObject*>(comp);
+            if (!obj || obj == this)
+                continue;
 
-            if (getBoundingBox().Intersects(objet->GetBoundingBox()))
-            {
-                std::cout << "Collision avec : " << objet << std::endl;
+            if (obj->globalGameObjectType() != GameObjectType::DestructibleObject)
+                continue;
 
-                objet->getShape()->setPosition(objet->getLastPosition());
-            }
+            AABB objetBox = obj->GetBoundingBox();
+
             
-        }*/
+            if (regionBox.Intersects(objetBox))
+            {
+                std::cout << "Collision avec : " << typeid(*this).name() << " " << typeid(*obj).name() << std::endl;
 
+                if (std::string(typeid(*obj).name()) == "class Hero")
+                {
+                    Hero* hero = static_cast<Hero*>(obj);
+                    static_cast<Physics*>(hero->m_physics)->on_ground = true;
+                    static_cast<Physics*>(hero->m_physics)->m_velocity.y = 0.f;
+                    /*hero->getShape()->setPosition(hero->getLastPosition());*/
+
+                }
+                obj->HandleCollision(this);
+                
+
+               
+
+                
+            }
+
+            
+            
+        }
+        
     }
 
 
     float getX() const { return m_x; }
     float getY() const { return m_y; }
 
-    Component GetComponentType() override {
-        return Component::IComposite;
-    }
-    const Component GetComponentType() const override {
-        return Component::IComposite;
-    }
     GameObjectType globalGameObjectType() override
     {
         return GameObjectType::NonDestructibleObject;
     }
 
+
 private :
     sf::RectangleShape m_shape;
-
+    float m_x, m_y, m_width, m_height;
+    //IShapeSFML* m_game_object;
 };
 

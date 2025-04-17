@@ -18,7 +18,7 @@ public:
         switch (type) 
         {
         case COLLISIONABLE:
-            return std::unique_ptr <CollisionRegion>(new CollisionRegion(x, y, width, height,scene));
+            return std::unique_ptr <CollisionRegion>(new CollisionRegion(x, y, width, height, scene));
         case DESTRUCTEUR:
             return std::unique_ptr <DestructeurRegion>(new DestructeurRegion(x, y, width, height, scene));
         case PLATEFORME:
@@ -31,13 +31,12 @@ public:
             throw std::runtime_error("Type de region inconnu");
         }
     }
-
+       
     void addRegion(RegionType type, float x, float y, float width, float height, IComposite* scene)
     {
-
-        m_regions.push_back(RegionManager::createRegion(type, x, y, width, height, scene));
+        m_regions.push_back(RegionManager::createRegion(type, x, y, width, height,  scene));
     }
-    
+
 
 private:
     std::vector<std::unique_ptr<IRegion>> m_regions;

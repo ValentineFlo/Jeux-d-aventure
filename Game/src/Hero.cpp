@@ -3,6 +3,9 @@
 #include "Animation.h"
 #include <iostream>
 
+#include "Region.h"
+#include "RegionCollision.h"
+
 //=========== IDLE STATE ===========//
 Hero::IState* Hero::IdleState::handle(const State& state)
 {
@@ -39,6 +42,11 @@ void Hero::IdleState::update(Hero* ship, float deltaTime)
         ship->ChangeState(State::MOVE);
         return;
     }
+
+    static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
+        ship->m_strafe,
+        ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
+    );
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && ship->m_meleeAttackTimer.ActionIsReady())
     {
@@ -237,16 +245,12 @@ void Hero::PistolAttackState::update(Hero* ship, float deltaTime)
         }
     }
 
-    if (ship->m_strafe[trust::Left]
-        || ship->m_strafe[trust::Right]
-        || ship->m_strafe[trust::Up]
-        || ship->m_strafe[trust::Down])
-    {
+
         static_cast<Physics*>(ship->m_physics)->ExecutePhysics(
             ship->m_strafe,
             ship->m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()
         );
-    }
+    
 }
 
 //=========== RELOAD STATE ===========//
@@ -279,24 +283,27 @@ void Hero::ReloadState::update(Hero* ship, float deltaTime)
 }
 
 //=========== SHIP IMPLEMENTATION ===========//
-Hero::Hero(IComposite* scene, IShapeSFML* background)
+Hero::Hero(IComposite* scene, sf::Vector2f BasePosition)
     : DestructibleObject(scene, 10)
     , IComposite(scene)
-    , m_background(background)
     , m_angle(0)
     , m_elapsedTime(0.2)
     , m_animate({ "Hero.png" })
-    , m_physics(new Physics(500))
+    , m_physics(new Physics(1000.f,5000.f,10.f))
     , m_invisibility(2.5)
     , m_detectionRadius(30.0f)
     , m_meleeDamage(0.01f)
     , m_meleeAttackCooldown(0.5f)
     , m_meleeAttackTimer(2.0f)
     , m_currentOrientation(Orientation::DOWN)
+    , m_lastPosition(sf::Vector2f(0.0f,0.0f))
+	, m_view(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920, 1080))
 {
-    m_shape = new SquareSFML(32, scene->getRoot()->getScene());
-    m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
 
+    m_shape = new RectangleSFML(100.f,160.f, BasePosition);
+    //m_shape = new SquareSFML(12.f, scene->getRoot()->getScene());
+    m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
+    
     m_animationComponent = new AnimationComponent(this);
     setupAnimations();
 
@@ -306,13 +313,15 @@ Hero::Hero(IComposite* scene, IShapeSFML* background)
 
     new Life(this, this, Color::Blue);
     m_turret = new FixTurret(this, m_shape, sf::Vector2f(35, -25), 0.75);
-    m_turret->SetFireRate(0.2f);
+    m_turret->SetFireRate(0.2f); 
     m_turret->SetOverloadGun(5, 30);
     m_turret->setBullet(0, 0, 0);
 
     m_currentState = new IdleState();
 
     m_animationComponent->playAnimation("idle_down");
+
+    
 }
 
 Hero::~Hero()
@@ -407,10 +416,23 @@ void Hero::ProcessInput(const sf::Event& event)
 void Hero::physics()
 {
     m_angle = anglecalcul();
+
 }
 
 void Hero::Update(const float& deltatime)
 {
+
+    //float PPos = m_background->getPosition().x + m_shape->getPosition().x;
+    //float PPosy = m_background->getPosition().y - (m_shape->getPosition().y+ (m_shape->getSize().y/2.f));
+    //std::cout << PPosy << std::endl;
+    //if ((PPos<PlateformeXmin || PPos> PlateformeXmax) && (PPosy < PlateformeY - 10.f || PPosy > PlateformeY + 10.f))
+    //    static_cast<Physics*>(m_physics)->on_ground = false;
+    //if (PPos > PlateformeXmin && PPos< PlateformeXmax && PPosy>PlateformeY - 12.f && PPosy < PlateformeY + 12)
+    //{
+    //    static_cast<Physics*>(m_physics)->on_ground = true;
+    //    static_cast<Physics*>(m_physics)->m_velocity.y = 0.f;
+    //}
+
     if (!m_currentState)
         throw std::runtime_error("current state est nullptr!");
 
@@ -448,12 +470,24 @@ void Hero::Update(const float& deltatime)
         }
     }
 
+    
+
     m_currentState->update(this, deltatime);
 
-    m_shape->setRotation(0);
+    
 
-    m_background->setPosition(static_cast<Physics*>(m_physics)->calculPosition(
-        m_background, m_scene->getRoot()->getScene(), m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()));
+    m_shape->setRotation(0);
+    
+    m_shape->setPosition(static_cast<Physics*>(m_physics)->calculPosition(
+        m_shape, m_scene->getRoot()->getScene(), m_scene->getRoot()->getScene()->getRefreshTime().asSeconds()));
+    
+    m_view.setCenter(sf::Vector2f(m_shape->getPosition().x, m_shape->getPosition().y));
+
+    std::cout << m_shape->getPosition().x << "  " << m_shape->getPosition().y << std::endl;
+
+    static_cast<Physics*>(m_physics)->on_ground = false;
+
+    //m_scene->getRoot()->getScene()->getWindow()->mapCoordsToPixel()
 
     m_animationComponent->updatePosition(m_shape->getPosition());
 
@@ -462,12 +496,14 @@ void Hero::Update(const float& deltatime)
     m_meleeAttackTimer.NextTIck(deltatime);
     IComposite::Update(deltatime);
     m_invisibility.NextTIck(m_scene->getRoot()->getScene()->getRefreshTime().asSeconds());
+
 }
 
 void Hero::Render()
 {
+    m_scene->getRoot()->getScene()->getWindow()->setView(m_view);
     m_animationComponent->Render();
-
+    
     if (m_animationComponent->getCurrentAnimation() != "")
     {
         sf::RectangleShape debugRect;
@@ -479,9 +515,11 @@ void Hero::Render()
         debugRect.setOrigin(frameSize.x * scale / 2.0f, frameSize.y * scale / 2.0f);
         debugRect.setPosition(pos);
         debugRect.setFillColor(sf::Color::Transparent);
-
+        debugRect.setOutlineColor(sf::Color::Red);
+        debugRect.setOutlineThickness(1.5f);
         m_scene->getRoot()->getScene()->getWindow()->draw(debugRect);
     }
+
 
     HandAttackState* state = dynamic_cast<HandAttackState*>(m_currentState);
     if (state && state->meleeHitbox)
@@ -489,23 +527,48 @@ void Hero::Render()
         m_scene->getRoot()->getScene()->getWindow()->draw(state->meleeHitbox->getShape());
     }
 
+
+    
     IComposite::Render();
 }
+
+
 
 float Hero::anglecalcul()
 {
     sf::Vector2i mousePos = sf::Mouse::getPosition(*m_scene->getRoot()->getScene()->getWindow());
+    sf::Vector2f mousePosView = m_scene->getRoot()->getScene()->getWindow()->mapPixelToCoords(mousePos);
     sf::Vector2f shipPos = m_shape->getPosition();
-    float deltaX = mousePos.x - shipPos.x;
-    float deltaY = mousePos.y - shipPos.y;
+    float deltaX = mousePosView.x - shipPos.x;
+    float deltaY = mousePosView.y - shipPos.y;
     float angle = std::atan2(deltaY, deltaX) * 180 / 3.14159f;
     return angle;
 }
 
 void Hero::HandleCollision(IGameObject* object)
 {
+    if (std::string(typeid(*object).name()) == "class CollisionRegion")
+    {
+        //IRegion* region = static_cast<CollisionRegion*>(object);
+        //PlateformeXmin = region->getX();
+        //PlateformeXmax = region->getX() + region->getWidth();
+        //PlateformeY = region->getY();
+        //
+        //
+        //static_cast<Physics*>(m_physics)->m_velocity.y = 0.f;
+        ///*hero->getShape()->setPosition(hero->getLastPosition());*/
+    	//float PPosy = m_background->getPosition().y - (m_shape->getPosition().y+ (m_shape->getSize().y/2.f));
+		//std::cout << PPosy << std::endl;
+
+    }
+
     if (object->globalGameObjectType() != GameObjectType::DestructibleObject)
         return;
+
+
+    AABB myBox = this->getShape()->GetBoundingBox();
+    
+
 
     ChangeLife(-1);
 }
@@ -622,3 +685,6 @@ std::string Hero::getOrientationString() const
         return "down";
     }
 }
+
+
+
