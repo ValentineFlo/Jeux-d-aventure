@@ -524,7 +524,7 @@ void Physics::ExecutePhysics(KT::VectorND<bool, 4>& isStrafing, float framerate)
 	}
 	if (isStrafing[trust::Up] && on_ground)
 	{
-		m_velocity.y -= 10000.f;
+		m_velocity.y -= 2000.f;
 		on_ground = false;
 	}
 
@@ -550,7 +550,7 @@ void Physics::ExecutePhysics(KT::VectorND<bool, 4>& isStrafing, float framerate)
 
 	float Length = std::sqrt(m_velocity.x * m_velocity.x + m_velocity.y * m_velocity.y);
 
-	if (m_velocity.x> getMaxVelocity() || m_velocity.x < -getMaxVelocity() || m_velocity.y < -getMaxVelocity())
+	if (m_velocity.x> getMaxVelocity() || m_velocity.x < -getMaxVelocity() || m_velocity.y > getMaxVelocity())
 	{
 		m_velocity = m_velocity * (getMaxVelocity() / Length);
 

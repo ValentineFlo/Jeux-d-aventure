@@ -10,7 +10,7 @@ Game::Game(sf::RenderWindow* window, const float& framerate, TextureCache* textu
 
 {
 	m_Background = new SquareSFML(10000, sf::Vector2f(0, 0));
-	m_Background->setTexture(m_texture->getTexture("Map.png"));
+	m_Background->setTexture(m_texture->getTexture("marsmid.png"));
 	m_hero = new Hero(this, {0.f,0.f});
 	
 	//m_regionManager.addRegion(COLLISIONABLE, 850.0f, 500.0f, 900.0f, 50.0f,  this);

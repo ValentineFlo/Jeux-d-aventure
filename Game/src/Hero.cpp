@@ -534,8 +534,7 @@ void Hero::setupAnimations()
 {
     const int FRAME_WIDTH = 48;
     const int FRAME_HEIGHT = 48;
-    const int FRAME_WIDTH = 48;
-    const int FRAME_HEIGHT = 48;
+
 
     const int IDLE_FRAMES = 4;
     const int MOVE_FRAMES = 10;
@@ -545,12 +544,10 @@ void Hero::setupAnimations()
 
 
     Animation idleAnimLeft("player1.png", IDLE_FRAMES, 100.f);
-    Animation idleAnimLeft("player1.png", IDLE_FRAMES, 100.f);
     idleAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     idleAnimLeft.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
     idleAnimLeft.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
 
-    Animation idleAnimRight("player1.png", IDLE_FRAMES, 100.f);
     Animation idleAnimRight("player1.png", IDLE_FRAMES, 100.f);
     idleAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     idleAnimRight.setStartPosition(sf::Vector2i(0, 0 * FRAME_HEIGHT), 1);
@@ -559,12 +556,11 @@ void Hero::setupAnimations()
     ///
 
     Animation moveAnimLeft("player1.png", MOVE_FRAMES, 50.f);
-    Animation moveAnimLeft("player1.png", MOVE_FRAMES, 50.f);
+  
     moveAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     moveAnimLeft.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
     moveAnimLeft.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
 
-    Animation moveAnimRight("player1.png", MOVE_FRAMES, 50.f);
     Animation moveAnimRight("player1.png", MOVE_FRAMES, 50.f);
     moveAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     moveAnimRight.setStartPosition(sf::Vector2i(0, 3 * FRAME_HEIGHT), 1);
@@ -576,7 +572,6 @@ void Hero::setupAnimations()
     attackAnimLeft.setStartPosition(sf::Vector2i(0, 9 * FRAME_HEIGHT), 1);
 
     Animation attackAnimRight("player.png", ATTACK_FRAMES, 100.f, false);
-    Animation attackAnimRight("player.png", ATTACK_FRAMES, 100.f, false);
     attackAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
     attackAnimRight.setStartPosition(sf::Vector2i(0, 9 * FRAME_HEIGHT), 1);
 
@@ -585,7 +580,7 @@ void Hero::setupAnimations()
 	JumpAnimLeft.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
 	JumpAnimLeft.setStartPosition(sf::Vector2i(0, 4 * FRAME_HEIGHT), 1);
 
-	Animation JumpAnimRight("player1.png", JUMPBegin_FRAMES, 100.f, false);
+	Animation JumpAnimRight("player1.png", JUMPBegin_FRAMES, 50.f, false);
 	JumpAnimRight.setFrameSize(sf::Vector2i(FRAME_WIDTH, FRAME_HEIGHT));
 	JumpAnimRight.setStartPosition(sf::Vector2i(0, 4 * FRAME_HEIGHT), 1);
 
