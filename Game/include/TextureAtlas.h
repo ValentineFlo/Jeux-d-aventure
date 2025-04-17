@@ -364,23 +364,25 @@ class TileSet : TextureAtlas
 public:
 	TileSet(TextureCache* texture)
 		:TextureAtlas()
+		,m_factor(3.0f)
 	{
 		m_texture = texture;
 		setTextureAtlasPixelSize({ 160,128 });
 		Load("TileSet\\TilesetTest.png");
-		addRegion(sf::Vector2i(0, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));//petit sol rouge r
-		addRegion(sf::Vector2i(8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol rouge R
-		addRegion(sf::Vector2i(8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond casser 
-		addRegion(sf::Vector2i(8 + 24+24, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));// petit sol gris foncer
-		addRegion(sf::Vector2i(8 + 24 + 24, 16), sf::Vector2i(1, 1), sf::Vector2i(7, 7));// fond noir
-		addRegion(sf::Vector2i(8 + 24 + 24+8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol gris foncer
-		addRegion(sf::Vector2i(8 + 24 + 24 + 8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond sol gris foncer
+		addRegion(sf::Vector2i(0, 8), sf::Vector2i(1, 1), sf::Vector2i(8, 8));//petit sol rouge r
+		addRegion(sf::Vector2i(8, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 24));// gros sol rouge R
+		addRegion(sf::Vector2i(8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 24));// fond casser 
+		addRegion(sf::Vector2i(8 + 24+24, 8), sf::Vector2i(1, 1), sf::Vector2i(8, 8));// petit sol gris foncer
+		addRegion(sf::Vector2i(8 + 24 + 24, 16), sf::Vector2i(1, 1), sf::Vector2i(8, 8));// fond noir
+		addRegion(sf::Vector2i(8 + 24 + 24+8, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 24));// gros sol gris foncer
+		addRegion(sf::Vector2i(8 + 24 + 24 + 8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 24));// fond sol gris foncer
 		addRegion(sf::Vector2i(8 + 24 + 24 + 8 + 24+24-1, 8-1), sf::Vector2i(1, 1), sf::Vector2i(25, 9));// tapis roulant
 
 		//addRegion(sf::Vector2i(0, 35), sf::Vector2i(1, 1), sf::Vector2i(7, 13));//petit sol jaune n�1
 		//addRegion(sf::Vector2i(0, 35+13), sf::Vector2i(1, 1), sf::Vector2i(7, 7));//petit sol jaune n�2
 		//addRegion(sf::Vector2i(7, 35), sf::Vector2i(1, 1), sf::Vector2i(7, 13));//gros sol jaune 
 
+		setScale(m_factor);
 
 		registerTile('r', 0);//petit sol rouge r
 		registerTile('R', 1);// gros sol rouge 
@@ -423,8 +425,13 @@ public:
 			throw std::out_of_range("The tile is not in the std::map m_tileset");
 		return getRegion(it->second).getFrameSize();
 	}
+	const float& getFactor()const
+	{
+		return m_factor;
+	}
 private:
 	std::map<tile, size_t> m_tileset;
+	float m_factor;
 };
 namespace sf
 {
@@ -437,8 +444,10 @@ class TileMap
 {
 public:
 	TileMap(TextureCache* texture)
+		:m_mapmodified(false)
 	{
 		m_tileset = new TileSet(texture);
+		m_BASE_CELL_SIZE = sf::Vector2i(8 * m_tileset->getFactor(), 8 * m_tileset->getFactor());
 	}
 	
 	~TileMap()
@@ -449,15 +458,15 @@ public:
 	//Problème de position
 	sf::Vector2i ConvertPixeltoCase(const sf::Vector2i& position)
 	{
-		return sf::Vector2i(static_cast<int>(position.x / 7), static_cast<int>(position.y / 7));
+		return sf::Vector2i(static_cast<int>(position.x / getBASE_CELL_SIZE().x), static_cast<int>(position.y / getBASE_CELL_SIZE().y));
 	}
 	//Problème de position
 	void CreateEmpty(const unsigned int& x,  const unsigned int& y)
 	{
 		m_map.clear();
 
-		int gridX = static_cast<int>(std::ceil(x / 7.0f));
-		int gridY = static_cast<int>(std::ceil(y / 7.0f));
+		int gridX = static_cast<int>(std::ceil(x /  getBASE_CELL_SIZE().x));
+		int gridY = static_cast<int>(std::ceil(y / getBASE_CELL_SIZE().y));
 
 		for (int CaseX = 0;CaseX < gridX;++CaseX)
 		{
@@ -470,6 +479,7 @@ public:
 	void setTile(const sf::Vector2i& position, const tile& tile)
 	{
 		m_map[position] = tile;
+		setMapModified(true);
 	}
 	const tile& getTile(const sf::Vector2i& position) const
 	{
@@ -495,6 +505,7 @@ public:
 		if (it == m_map.end())
 			throw std::out_of_range("The position is not in the std::map m_map");
 		m_map.erase(it);
+		setMapModified(true);
 	}
 
 	void Render( sf::RenderWindow& window)
@@ -505,8 +516,8 @@ public:
 			const tile& tiletype = it->second;
 
 			sf::Sprite tileSprite = m_tileset->getTileSprite(tiletype);
-			tileSprite.setPosition(static_cast<float>(gridpos.x * m_tileset->getTileSize(tiletype).x),
-								   static_cast<float>(gridpos.y * m_tileset->getTileSize(tiletype).y));
+			tileSprite.setPosition(static_cast<float>(gridpos.x * getBASE_CELL_SIZE().x),
+								   static_cast<float>(gridpos.y * getBASE_CELL_SIZE().y));
 			window.draw(tileSprite);
 		}
 	}
@@ -518,9 +529,28 @@ public:
 	{
 		return m_map;
 	}
+	const sf::Vector2i& getBASE_CELL_SIZE() const
+	{
+		return m_BASE_CELL_SIZE;
+	}
+	const bool& isMapModified() const
+	{
+		return m_mapmodified;
+	}
+	void setMapModified(bool mapmodifed)
+	{
+		m_mapmodified = mapmodifed;
+	}
+	void resetMapModified()
+	{
+		setMapModified(false);
+	}
+	int renderCount = 0;
 private:
 	std::map<sf::Vector2i, tile> m_map;
 	TileSet* m_tileset;
+	sf::Vector2i m_BASE_CELL_SIZE;
+	bool m_mapmodified;
 };
 
 class LevelFactory

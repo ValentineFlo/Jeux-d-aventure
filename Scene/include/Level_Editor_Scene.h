@@ -31,7 +31,8 @@ public:
 				break;
 
 			case sf::Mouse::Right:
-				if(m_tilemap->hasTile(posMouseinGrid)==true)
+
+				if (m_tilemap->hasTile(posMouseinGrid)) 
 					m_tilemap->removeTile(posMouseinGrid);
 				break;
 			default:
@@ -64,11 +65,14 @@ public:
 
 	 void Update(const float& deltatime) override
 	 {
-
+		 if (m_tilemap->isMapModified() == true)
+		 {
+			 m_tilemap->resetMapModified();
+		 }
 	 }
 
 	 void Render() override
-	 { 
+	 {
 		 m_tilemap->Render(*(m_window));
 	 }
 
