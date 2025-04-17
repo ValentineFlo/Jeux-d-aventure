@@ -500,7 +500,7 @@ Hero::Hero(IComposite* scene, sf::Vector2f BasePosition)
 	, m_view(sf::Vector2f(0.f, 0.f), sf::Vector2f(1920, 1080))
 {
 
-    m_shape = new RectangleSFML(100.f,160.f, BasePosition);
+    m_shape = new RectangleSFML(70.f,150.f, BasePosition);
     //m_shape = new SquareSFML(12.f, scene->getRoot()->getScene());
     m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture(m_animate.getCurrentPath()));
     

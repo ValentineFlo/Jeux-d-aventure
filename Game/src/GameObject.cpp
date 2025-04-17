@@ -255,6 +255,7 @@ PlayerSprite::PlayerSprite() : AnimateSprite({ "bullet.png" })
 FixTurret::FixTurret(IComposite* scene, IShapeSFML* game_object, sf::Vector2f& positiondiff, float angle) : ITurret(scene, game_object, positiondiff), m_angleDiff(angle), BaseShape(10, m_gameObject->getPosition())
 {
 	m_shape = new SquareSFML(10, m_gameObject->getPosition());
+	m_shape->setTexture(m_scene->getRoot()->getScene()->getTexture()->getTexture("nothing.png"));
 }
 
 void FixTurret::Update(const float& deltatime)
