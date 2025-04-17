@@ -32,7 +32,7 @@ protected:
 	{
 		m_textureloaded = false;
 	}
-	bool TextureisLoaded()
+	const bool TextureisLoaded() 
 	{
 		return m_textureloaded;
 	}
@@ -64,26 +64,26 @@ protected:
 	}
 
 	void setVirtualGridStandard(const sf::Vector2i& VirtualGridSize,
-		const sf::Vector2i& SpriteSheetPixelSize,
+		const sf::Vector2i& TextureAtlasPixelSize,
 		const sf::Vector2i& frameSize,
 		const sf::Vector2i& spacing = sf::Vector2i(0, 0))
 	{
-		if (hasNegativeValues(VirtualGridSize) || hasNegativeValues(SpriteSheetPixelSize) || hasNegativeValues(frameSize) || hasNegativeValues(spacing))
+		if (hasNegativeValues(VirtualGridSize) || hasNegativeValues(TextureAtlasPixelSize) || hasNegativeValues(frameSize) || hasNegativeValues(spacing))
 			throw std::out_of_range("size cannot be negative");
 
 		int TotalWidth = VirtualGridSize.x * frameSize.x + (VirtualGridSize.x - 1) * spacing.x;
 		int TotalHeight = VirtualGridSize.y * frameSize.y + (VirtualGridSize.y - 1) * spacing.y;
 
-		if (TotalWidth > SpriteSheetPixelSize.x || TotalHeight > SpriteSheetPixelSize.y)
+		if (TotalWidth > TextureAtlasPixelSize.x || TotalHeight > TextureAtlasPixelSize.y)
 			throw std::runtime_error("The total size of the virtual grid (in rows and columns) cannot exceed or be equal to the size of the spritesheet.");
 		if (VirtualGridSize.x == 0 && VirtualGridSize.y == 0)
 			throw std::runtime_error("the grid cannot be empty");
 		if (frameSize.x == 0 || frameSize.y == 0)
 			throw std::runtime_error("frame size cannot be 0");
-		if (frameSize.x >= SpriteSheetPixelSize.x || frameSize.y >= SpriteSheetPixelSize.y)
+		if (frameSize.x >= TextureAtlasPixelSize.x || frameSize.y >= TextureAtlasPixelSize.y)
 			throw std::runtime_error("frame size cannot be greater than or equal to Sprite-Sheet size (in pixels)");
 
-		setSpriteSheetPixelSize(SpriteSheetPixelSize);
+		setTextureAtlasPixelSize(TextureAtlasPixelSize);
 
 		m_RegionList.clear();
 		addRegion({ 0,0 }, VirtualGridSize, frameSize, spacing);
@@ -166,9 +166,9 @@ protected:
 	{
 		return m_RegionList[m_currentRegionIndex];
 	}
-	void setSpriteSheetPixelSize(const sf::Vector2i& spritesheetsize)
+	void setTextureAtlasPixelSize(const sf::Vector2i& textureatlassize)
 	{
-		m_TextureAtlasPixelSize = spritesheetsize;
+		m_TextureAtlasPixelSize = textureatlassize;
 	}
 	const sf::Vector2i& getSpriteSheetPixelSize() const
 	{
@@ -366,14 +366,15 @@ public:
 		:TextureAtlas()
 	{
 		m_texture = texture;
+		setTextureAtlasPixelSize({ 160,128 });
 		Load("TileSet\\TilesetTest.png");
 		addRegion(sf::Vector2i(0, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));//petit sol rouge r
 		addRegion(sf::Vector2i(8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol rouge R
-		addRegion(sf::Vector2i(8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond cass� 
-		addRegion(sf::Vector2i(8 + 24+24, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));// petit sol gris fonc�
+		addRegion(sf::Vector2i(8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond casser 
+		addRegion(sf::Vector2i(8 + 24+24, 4), sf::Vector2i(1, 1), sf::Vector2i(8, 12));// petit sol gris foncer
 		addRegion(sf::Vector2i(8 + 24 + 24, 16), sf::Vector2i(1, 1), sf::Vector2i(7, 7));// fond noir
-		addRegion(sf::Vector2i(8 + 24 + 24+8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol gris fonc�
-		addRegion(sf::Vector2i(8 + 24 + 24 + 8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond sol gris fonc�
+		addRegion(sf::Vector2i(8 + 24 + 24+8, 4), sf::Vector2i(1, 1), sf::Vector2i(24, 28));// gros sol gris foncer
+		addRegion(sf::Vector2i(8 + 24 + 24 + 8+24, 8), sf::Vector2i(1, 1), sf::Vector2i(24, 23));// fond sol gris foncer
 		addRegion(sf::Vector2i(8 + 24 + 24 + 8 + 24+24-1, 8-1), sf::Vector2i(1, 1), sf::Vector2i(25, 9));// tapis roulant
 
 		//addRegion(sf::Vector2i(0, 35), sf::Vector2i(1, 1), sf::Vector2i(7, 13));//petit sol jaune n�1
@@ -383,18 +384,17 @@ public:
 
 		registerTile('r', 0);//petit sol rouge r
 		registerTile('R', 1);// gros sol rouge 
-		registerTile('C', 2);// fond cass�
-		registerTile('g', 3);// petit sol gris fonc�
+		registerTile('C', 2);// fond casser
+		registerTile('g', 3);// petit sol gris foncer
 		registerTile('N', 4);// fond noir
-		registerTile('G', 5);// gros sol gris fonc�
-		registerTile('A', 6);//fond sol gris fonc�
+		registerTile('G', 5);// gros sol gris foncer
+		registerTile('A', 6);//fond sol gris foncer
 		registerTile('T', 7);// tapis roulant
 
 	}
 	~TileSet()
 	{
-		delete m_texture;
-		m_texture = nullptr;
+		
 	}
 	void registerTile( const tile& tile, const size_t& idxregionlist)
 	{
@@ -436,16 +436,36 @@ namespace sf
 class TileMap
 {
 public:
-	TileMap(TileSet* tileset)
-		:m_tileset(tileset)
+	TileMap(TextureCache* texture)
 	{
-
+		m_tileset = new TileSet(texture);
 	}
 	
 	~TileMap()
 	{
 		delete m_tileset;
 		m_tileset = nullptr;
+	}
+	//Problème de position
+	sf::Vector2i ConvertPixeltoCase(const sf::Vector2i& position)
+	{
+		return sf::Vector2i(static_cast<int>(position.x / 7), static_cast<int>(position.y / 7));
+	}
+	//Problème de position
+	void CreateEmpty(const unsigned int& x,  const unsigned int& y)
+	{
+		m_map.clear();
+
+		int gridX = static_cast<int>(std::ceil(x / 7.0f));
+		int gridY = static_cast<int>(std::ceil(y / 7.0f));
+
+		for (int CaseX = 0;CaseX < gridX;++CaseX)
+		{
+			for (int CaseY = 0;CaseY < gridY;++CaseY)
+			{
+				setTile({ CaseX ,CaseY }, 'C');
+			}
+		}
 	}
 	void setTile(const sf::Vector2i& position, const tile& tile)
 	{
@@ -498,8 +518,6 @@ public:
 	{
 		return m_map;
 	}
-	/*void SaveToFile(const std::string& filename);
-	void LoadFromFile(const std::string& filename);*/
 private:
 	std::map<sf::Vector2i, tile> m_map;
 	TileSet* m_tileset;
